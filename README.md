@@ -41,6 +41,43 @@ Sva pitanja su obavezna osim polja za dodatnu/prethodnu aktivnost.
 
 ---
 
+## Git — rad sa kodom
+
+### Kloniranje repozitorijuma
+
+```bash
+git clone <URL repozitorijuma>
+cd "CLAUDE UPITNIK"
+```
+
+### Tipičan tok rada
+
+```bash
+# Pregledaj izmene pre nego što ih sačuvaš
+git status
+git diff
+
+# Dodaj izmenjene fajlove i napravi commit
+git add style.css script.js index-muzika.html   # navedi konkretne fajlove
+git commit -m "Kratak opis izmene"
+
+# Pošalji na remote (GitHub/GitLab)
+git push
+```
+
+### Korisne komande
+
+| Komanda | Šta radi |
+|---|---|
+| `git log --oneline` | Pregled istorije commitova |
+| `git diff` | Pregled nekomitovanih izmena |
+| `git restore <fajl>` | Povratak na poslednju komitovanu verziju fajla |
+| `git pull` | Preuzimanje najnovije verzije sa remote-a |
+
+> **Napomena:** Projekat nema build korak — fajlovi se direktno otvaraju u pretraživaču. Nema `node_modules` ni generisanih fajlova koje treba isključiti iz gita (`.gitignore` nije neophodan, ali možete dodati `.DS_Store` unos).
+
+---
+
 ## Tehničke napomene
 
 - Čist HTML/CSS/JS, bez framework-a ni zavisnosti

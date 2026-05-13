@@ -8,7 +8,9 @@ Always invoke the `frontend-design` skill when making any UI, layout, or styling
 
 ## Project overview
 
-**Upitnik** is a static multi-page research survey for the Academy of Arts, University of Novi Sad, Serbia. Participants of group music, sport, or folklore activities fill in demographic questions and five validated psychological scales (MHC-SF, SPS-10, WHO-5, SWLS, FAS), then sign a canvas consent block.
+**Upitnik** is a static multi-page research survey conducted jointly by the Faculty of Education in Sombor (Pedagoški fakultet u Somboru) and the Academy of Arts, University of Novi Sad. Participants of group music, sport, or folklore activities fill in demographic questions and five validated psychological scales (MHC-SF, SPS-10, WHO-5, SWLS, FAS), then sign a canvas consent block.
+
+On submit, the form currently shows a thank-you `alert()` — there is no backend endpoint. Form data is not sent anywhere.
 
 No build step. No package manager. No test runner. Open any `.html` file directly in a browser to develop.
 
@@ -44,14 +46,23 @@ CSS custom properties are defined on `:root`. Key tokens:
 | Token | Value | Use |
 |---|---|---|
 | `--bg-page` | `#D6CCBA` | Page background |
-| `--povrsina` | `#FDFBF7` | Form panel, input backgrounds |
+| `--bg` | `#F3F1EC` | Subtle off-white — unselected option hover, input backgrounds |
+| `--povrsina` | `#FDFBF7` | Form panel, selected option backgrounds |
+| `--ivica` | `#D5D0C7` | Default borders |
+| `--ivica-jak` | `#B5AFA4` | Stronger borders — inputs, section dividers |
 | `--tekst` | `#1E1B16` | Primary text |
 | `--tekst-slab` | `#58524A` | Secondary text |
+| `--tekst-slabi` | `#908880` | Placeholder / tertiary text |
 | `--plava` | `oklch(0.34 0.09 250)` | Accent — selected states, focus rings, submit button |
 | `--plava-sv` | `oklch(0.96 0.015 250)` | Light accent — hover backgrounds |
+| `--plava-ivica` | `oklch(0.60 0.05 250)` | Focused input border |
 | `--greska` | `oklch(0.45 0.15 25)` | Error state |
+| `--greska-sv` | `oklch(0.96 0.03 25)` | Error background tint |
 | `--font-serif` | Lora | Headings, body text, option labels |
 | `--font-sans` | Source Sans 3 | UI labels, badges, buttons, Likert numbers |
+| `--r-mali` | `3px` | Small border radius |
+| `--r-sredi` | `5px` | Medium border radius |
+| `--senka` | layered box-shadow | Card and panel shadows |
 
 The `.upitnik` card uses a hard-coded `background: #4D4B47` (dark charcoal), not a token. The `.likert-zaglavlje` also uses this dark background.
 
