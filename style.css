@@ -1,0 +1,1510 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+/* ══════════════════════════════════════════
+   TOKENI
+   ══════════════════════════════════════════ */
+:root {
+    /* Neutralne boje — topla akademska paleta */
+    --bg:          #F3F1EC;
+    --bg-page:     #D6CCBA;
+    --povrsina:    #FDFBF7;
+    --ivica:       #D5D0C7;
+    --ivica-jak:   #B5AFA4;
+    --tekst:       #1E1B16;
+    --tekst-slab:  #58524A;
+    --tekst-slabi: #908880;
+
+    /* Akcent — duboka akademska tamno-plava */
+    --plava:       oklch(0.34 0.09 250);
+    --plava-sv:    oklch(0.96 0.015 250);
+    --plava-ivica: oklch(0.60 0.05 250);
+
+    /* Greška */
+    --greska:      oklch(0.45 0.15 25);
+    --greska-sv:   oklch(0.96 0.03 25);
+
+    /* Tipografija */
+    --font-sans:   'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-serif:  'Lora', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+
+    /* Geometrija */
+    --r-mali:  3px;
+    --r-sredi: 5px;
+    --senka:   0 1px 3px rgba(30,20,10,0.06), 0 4px 16px rgba(30,20,10,0.05);
+}
+
+/* ══════════════════════════════════════════
+   RESET I OSNOVA
+   ══════════════════════════════════════════ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-serif);
+    background-color: var(--bg-page);
+    color: var(--tekst);
+    min-height: 100vh;
+    padding: 48px 20px 72px;
+    line-height: 1.5;
+}
+
+/* ── Stara klasa pozadine — onemogućena ── */
+.pozadina-ukras,
+.krug { display: none; }
+
+/* ══════════════════════════════════════════
+   KARTICA UPITNIKA
+   ══════════════════════════════════════════ */
+.upitnik {
+    position: relative;
+    max-width: 740px;
+    margin: 0 auto;
+    background: #4D4B47;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(30,20,10,0.12), 0 8px 32px rgba(30,20,10,0.10);
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
+   HEADER
+   ══════════════════════════════════════════ */
+.upitnik-header {
+    background: transparent;
+    padding: 44px 52px 40px;
+    border-bottom: none;
+    position: relative;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: oklch(0.72 0.04 55);
+    border: 1px solid oklch(0.35 0.04 55);
+    border-radius: var(--r-mali);
+    padding: 4px 10px;
+    margin-bottom: 20px;
+}
+
+.upitnik-header h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 400;
+    color: #F0F0F8;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 20px 32px;
+    display: inline-block;
+}
+
+.upitnik-header h1 em {
+    font-style: italic;
+    color: oklch(0.78 0.04 55);
+    font-weight: 400;
+}
+
+.uputstvo {
+    font-size: 0.82rem;
+    color: oklch(0.74 0.02 70);
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    white-space: pre-line;
+    text-align: center;
+}
+
+.uputstvo:empty {
+    display: none;
+}
+
+/* ══════════════════════════════════════════
+   FORMA
+   ══════════════════════════════════════════ */
+form {
+    background: var(--povrsina);
+    margin: 0 16px 16px;
+    border-radius: 6px;
+    padding: 44px 40px 48px;
+    counter-reset: sekcija;
+}
+
+/* ══════════════════════════════════════════
+   SEKCIJA
+   ══════════════════════════════════════════ */
+.sekcija {
+    margin-bottom: 56px;
+    counter-increment: sekcija;
+}
+
+.sekcija:last-of-type {
+    margin-bottom: 40px;
+}
+
+.sekcija-zaglavlje {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--tekst);
+}
+
+.sekcija-broj {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tekst-slabi);
+    flex-shrink: 0;
+}
+
+.sekcija-naslov {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--tekst);
+    letter-spacing: 0;
+}
+
+/* ══════════════════════════════════════════
+   PITANJE
+   ══════════════════════════════════════════ */
+.pitanje {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--ivica);
+}
+
+.pitanje:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.pitanje-tekst {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--tekst-slab);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════
+   OPCIJE (radio)
+   ══════════════════════════════════════════ */
+.opcije-red {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.opcija {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.opcija input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.opcija span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--tekst);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 8px 12px;
+    width: 100%;
+    transition: background 0.12s ease, color 0.12s ease;
+    position: relative;
+}
+
+/* Indikator kvadratić */
+.opcija span::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    border: 1.5px solid var(--ivica-jak);
+    border-radius: 50%;
+    background: var(--povrsina);
+    transition: border-color 0.12s, background 0.12s;
+}
+
+.opcija:hover span {
+    background: var(--bg);
+}
+
+.opcija:hover span::before {
+    border-color: var(--plava);
+}
+
+.opcija input[type="radio"]:checked + span {
+    background: var(--plava-sv);
+    color: var(--tekst);
+    font-weight: 500;
+}
+
+.opcija input[type="radio"]:checked + span::before {
+    background: var(--plava);
+    border-color: var(--plava);
+    box-shadow: inset 0 0 0 3px var(--povrsina);
+}
+
+/* ── Zasivljavanje neizabranih ── */
+.opcije-red.ima-izbor .opcija.neizabrana span {
+    color: var(--tekst-slabi);
+    opacity: 0.6;
+}
+
+.opcije-red.ima-izbor .opcija.neizabrana:hover span {
+    opacity: 0.85;
+    background: var(--bg);
+}
+
+/* ── Opcija "Drugo" sa tekstualnim unosom ── */
+.unos-drugo {
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--tekst);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--ivica-jak);
+    border-radius: 0;
+    padding: 0 4px 2px;
+    width: 180px;
+    outline: none;
+    pointer-events: none;
+    opacity: 0.4;
+    transition: border-color 0.15s, opacity 0.15s;
+}
+
+.opcija-drugo input[type="radio"]:checked ~ * .unos-drugo,
+.opcija-drugo input[type="radio"]:checked + span .unos-drugo {
+    pointer-events: auto;
+    opacity: 1;
+    border-bottom-color: var(--plava);
+}
+
+.unos-drugo::placeholder {
+    color: var(--tekst-slabi);
+    font-style: italic;
+}
+
+.unos-drugo:focus {
+    border-bottom-color: var(--plava);
+}
+
+/* ── Opcije sa opisom (svaka opcija u paru sa objašnjenjem) ── */
+.opcije-sa-opisom {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.opcija-red-opis {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ivica);
+}
+
+.opcija-red-opis:last-child {
+    border-bottom: none;
+}
+
+.opcija-red-opis > .opcija {
+    flex-shrink: 0;
+    min-width: 160px;
+}
+
+.opcija-red-opis > .pojam {
+    flex: 1;
+}
+
+/* ── Pitanje sa opisom (opcije levo, blok desno) ── */
+.pitanje-sa-opisom {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.pitanje-sa-opisom > .opcije-red {
+    flex-shrink: 0;
+}
+
+.pitanje-sa-opisom > .pojmovi-blok {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* ── Pojmovi blok (informativni, bez interakcije) ── */
+.pojmovi-blok {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 12px;
+}
+
+.pojam {
+    font-family: var(--font-serif);
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--tekst-slab);
+    line-height: 1.55;
+}
+
+.pojam strong {
+    font-weight: 600;
+    color: var(--tekst);
+}
+
+/* ── Opcija sa opisom (ime levo, opis desno) ── */
+.opcija-ime {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: inherit;
+    white-space: nowrap;
+}
+
+.opcija-opis {
+    font-size: 0.74rem;
+    font-weight: 400;
+    color: var(--tekst-slab);
+    background: var(--bg);
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    padding: 5px 10px;
+    margin-left: auto;
+    line-height: 1.45;
+    max-width: 300px;
+    text-align: left;
+}
+
+.opcija:hover .opcija-opis {
+    border-color: var(--ivica-jak);
+}
+
+.opcija input[type="radio"]:checked + span .opcija-opis {
+    background: oklch(0.96 0.015 250);
+    border-color: var(--plava-ivica);
+    color: var(--tekst-slab);
+}
+
+/* ══════════════════════════════════════════
+   GREŠKA
+   ══════════════════════════════════════════ */
+.pitanje.greska .pitanje-tekst {
+    color: var(--greska);
+}
+
+.pitanje.greska .opcija span,
+.pitanje.greska .unos-broj {
+    border-color: var(--greska);
+}
+
+.pitanje.greska .opcija span::before {
+    border-color: oklch(0.60 0.10 25);
+}
+
+.greska-tekst {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--greska);
+    font-weight: 500;
+}
+
+/* ══════════════════════════════════════════
+   UNOS BROJA
+   ══════════════════════════════════════════ */
+.unos-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.unos-broj {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--tekst);
+    background: var(--povrsina);
+    border: 1.5px solid var(--ivica);
+    border-radius: var(--r-mali);
+    padding: 9px 14px;
+    width: 110px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    -moz-appearance: textfield;
+}
+
+.unos-broj::-webkit-outer-spin-button,
+.unos-broj::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.unos-broj:focus {
+    border-color: var(--plava);
+    box-shadow: 0 0 0 3px oklch(0.34 0.09 250 / 0.12);
+}
+
+.unos-broj::placeholder {
+    color: var(--tekst-slabi);
+}
+
+.unos-suffix {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--tekst-slab);
+}
+
+/* ── Unos linija (samo donja crta) ── */
+.unos-linija {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--tekst);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--ivica-jak);
+    border-radius: 0;
+    padding: 6px 2px;
+    width: 100%;
+    max-width: 400px;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.unos-linija:focus {
+    border-bottom-color: var(--plava);
+}
+
+.unos-linija::placeholder {
+    color: var(--tekst-slabi);
+}
+
+/* ══════════════════════════════════════════
+   SUBMIT
+   ══════════════════════════════════════════ */
+
+
+.podnozje-forme {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 28px;
+    border-top: 1px solid var(--ivica);
+    margin-top: 8px;
+}
+
+.dugme-submit {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 28px;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: white;
+    background: var(--plava);
+    border: none;
+    border-radius: var(--r-mali);
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 8px oklch(0.34 0.09 250 / 0.2);
+}
+
+.dugme-submit:hover {
+    background: oklch(0.28 0.08 250);
+    box-shadow: 0 4px 16px oklch(0.34 0.09 250 / 0.3);
+}
+
+.dugme-submit:active {
+    background: oklch(0.24 0.07 250);
+}
+
+/* ══════════════════════════════════════════
+   LIKERT SKALE
+   ══════════════════════════════════════════ */
+
+.skala-naslov {
+    font-family: var(--font-serif);
+    font-size: 1.22rem;
+    font-weight: 600;
+    color: var(--tekst);
+    line-height: 1.3;
+    margin: 0 0 8px;
+    letter-spacing: -0.005em;
+}
+
+.skala-naslov::before {
+    display: block;
+    content: "Sekcija " counter(sekcija);
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--plava);
+    margin-bottom: 8px;
+}
+
+.skala-uputstvo {
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    color: var(--tekst-slab);
+    line-height: 1.6;
+    margin: 0 0 24px;
+    padding: 12px 16px 12px 18px;
+    background: var(--bg);
+    border-left: 3px solid var(--plava-ivica);
+    border-radius: 0 var(--r-mali) var(--r-mali) 0;
+    font-weight: 400;
+}
+
+/* ── Podnaslov dimenzije unutar sekcije ── */
+.dimenzija-naslov {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 32px 0 12px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--plava);
+    letter-spacing: 0.005em;
+}
+
+.dimenzija-naslov::before {
+    content: '';
+    flex-shrink: 0;
+    width: 32px;
+    height: 1.5px;
+    background: var(--plava);
+    opacity: 0.55;
+}
+
+.sekcija > .dimenzija-naslov:first-of-type {
+    margin-top: 8px;
+}
+
+/* ── Likert blok — tabela ── */
+.likert-blok {
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    background: var(--povrsina);
+    margin-bottom: 32px;
+}
+
+/* ── Zaglavlje Likert (sticky pri skrolovanju) ── */
+.likert-zaglavlje {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    padding: 12px 16px 12px;
+    border-bottom: 2px solid var(--ivica-jak);
+    background: #4D4B47;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-radius: calc(var(--r-mali) - 1px) calc(var(--r-mali) - 1px) 0 0;
+    box-shadow: 0 1px 0 rgba(30,20,10,0.08);
+}
+
+.likert-red:last-child {
+    border-radius: 0 0 calc(var(--r-mali) - 1px) calc(var(--r-mali) - 1px);
+}
+
+.likert-pitanje {
+    font-size: 0.78rem;
+    color: oklch(0.78 0.02 70);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    align-self: center;
+}
+
+.likert-brojevi {
+    display: flex;
+    gap: 8px;
+}
+
+.likert-brojevi span {
+    width: 52px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: oklch(0.82 0.02 70);
+    letter-spacing: 0.04em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.likert-brojevi span b {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: oklch(0.34 0.06 250);
+}
+
+.likert-brojevi span small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: oklch(0.80 0.02 70);
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+    word-break: keep-all;
+    max-width: 56px;
+    letter-spacing: 0.01em;
+}
+
+/* ── Red ── */
+.likert-red {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--ivica);
+    margin-bottom: 0;
+    scroll-margin-top: 140px;
+    transition: background 0.1s;
+}
+
+.likert-red:last-child {
+    border-bottom: none;
+}
+
+.likert-red:hover {
+    background: var(--bg);
+}
+
+.likert-stavka {
+    font-size: 0.88rem;
+    color: var(--tekst);
+    line-height: 1.45;
+    cursor: default;
+    font-weight: 400;
+}
+
+.likert-stavka-broj {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--tekst-slabi);
+    margin-right: 6px;
+    letter-spacing: 0.04em;
+}
+
+/* ── Radio kružići u Likertu ── */
+.likert-opcije {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.likert-opcija {
+    cursor: pointer;
+}
+
+.likert-opcija input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.likert-opcija span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 34px;
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--tekst-slab);
+    background: var(--povrsina);
+    border: 1.5px solid var(--ivica);
+    border-radius: var(--r-mali);
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        color 0.12s ease,
+        opacity 0.15s ease;
+}
+
+.likert-opcija:hover span {
+    background: var(--plava-sv);
+    border-color: var(--plava-ivica);
+    color: var(--tekst);
+}
+
+.likert-opcija input[type="radio"]:checked + span {
+    background: var(--plava);
+    border-color: var(--plava);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ── Zasivljavanje u Likert redu ── */
+.likert-opcije.ima-izbor .likert-opcija.neizabrana span {
+    opacity: 0.3;
+}
+
+.likert-opcije.ima-izbor .likert-opcija.neizabrana:hover span {
+    opacity: 0.7;
+}
+
+/* ── Greška u Likert redu ── */
+.likert-red.greska .likert-stavka {
+    color: var(--greska);
+}
+
+.likert-red.greska .likert-opcija span {
+    border-color: oklch(0.60 0.10 25);
+    background: var(--greska-sv);
+}
+
+/* ── 7-stepena skala ── */
+.likert-7 .likert-opcija span {
+    width: 44px;
+    height: 30px;
+    font-size: 0.82rem;
+    border-radius: var(--r-mali);
+}
+
+.likert-7 .likert-brojevi span {
+    width: 44px;
+    font-size: 0.76rem;
+}
+
+.likert-7 .likert-brojevi span b {
+    font-size: 0.9rem;
+}
+
+.likert-7 .likert-brojevi span small {
+    max-width: 44px;
+    font-size: 0.6rem;
+}
+
+.likert-7 .likert-brojevi { gap: 5px; }
+.likert-7 .likert-opcije  { gap: 5px; }
+
+/* ══════════════════════════════════════════
+   POTVRDA SAGLASNOSTI
+   ══════════════════════════════════════════ */
+.saglasnost-blok {
+    background: var(--bg);
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    border-left: 3px solid var(--plava);
+    padding: 26px 28px 24px;
+    margin-bottom: 32px;
+}
+
+.saglasnost-blok .pitanje-tekst {
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--tekst);
+    margin-bottom: 12px;
+    line-height: 1.35;
+}
+
+.saglasnost-tekst {
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    color: var(--tekst-slab);
+    line-height: 1.7;
+    margin-bottom: 18px;
+    font-weight: 400;
+}
+
+.unos-saglasnost {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--tekst);
+    background: var(--povrsina);
+    border: 1.5px solid var(--ivica);
+    border-radius: var(--r-mali);
+    padding: 9px 14px;
+    width: 100%;
+    max-width: 280px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.unos-saglasnost:focus {
+    border-color: var(--plava);
+    box-shadow: 0 0 0 3px oklch(0.34 0.09 250 / 0.12);
+}
+
+.unos-saglasnost::placeholder {
+    color: var(--tekst-slabi);
+}
+
+.pitanje.greska .unos-saglasnost {
+    border-color: var(--greska);
+    background: var(--greska-sv);
+}
+
+/* ══════════════════════════════════════════
+   CANVAS POTPIS
+   ══════════════════════════════════════════ */
+.potpis-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 320px;
+}
+
+.potpis-canvas {
+    display: block;
+    width: 320px;
+    height: 120px;
+    background: var(--povrsina);
+    border: 1.5px solid var(--ivica);
+    border-radius: var(--r-mali);
+    cursor: crosshair;
+    touch-action: none;
+    transition: border-color 0.15s;
+}
+
+.potpis-canvas:hover,
+.potpis-canvas.aktivan {
+    border-color: var(--plava-ivica);
+}
+
+.potpis-canvas.prazno {
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 23px,
+        var(--bg-page) 23px,
+        var(--bg-page) 24px
+    );
+}
+
+.potpis-akcije {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.potpis-hint {
+    font-size: 0.72rem;
+    color: var(--tekst-slabi);
+    font-weight: 400;
+    flex: 1;
+}
+
+.potpis-obrisi {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tekst-slab);
+    background: none;
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+
+.potpis-obrisi:hover {
+    border-color: var(--greska);
+    color: var(--greska);
+    background: var(--greska-sv);
+}
+
+/* Greška stanje za canvas */
+.pitanje.greska .potpis-canvas {
+    border-color: var(--greska);
+    background: var(--greska-sv);
+}
+
+/* ══════════════════════════════════════════
+   INTRO STRANICA — IZBOR AKTIVNOSTI
+   ══════════════════════════════════════════ */
+.uvod-telo {
+    background: var(--povrsina);
+    margin: 0 16px 16px;
+    border-radius: 6px;
+    padding: 40px 44px 48px;
+}
+
+.uvod-tekst {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--tekst-slab);
+    margin-bottom: 36px;
+    font-weight: 300;
+    max-width: 560px;
+}
+
+.uvod-tekst p + p {
+    margin-top: 10px;
+}
+
+.izbor-naslov {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tekst-slabi);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ivica);
+}
+
+.aktivnosti {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--ivica);
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    overflow: hidden;
+}
+
+.dugme-aktivnost {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 24px 20px 22px;
+    font-family: var(--font-sans);
+    color: var(--tekst);
+    background: var(--povrsina);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.14s ease;
+    border: none;
+}
+
+.dugme-aktivnost:hover {
+    background: var(--plava-sv);
+}
+
+.dugme-aktivnost:hover .akt-ime {
+    color: var(--plava);
+}
+
+.akt-ikona {
+    display: block;
+    width: 28px;
+    height: 28px;
+    margin-bottom: 8px;
+    color: var(--plava);
+}
+
+.akt-ikona svg {
+    width: 28px;
+    height: 28px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.akt-ime {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--tekst);
+    display: block;
+    line-height: 1.3;
+    transition: color 0.12s;
+}
+
+.akt-opis {
+    font-size: 0.75rem;
+    color: var(--tekst-slabi);
+    display: block;
+    line-height: 1.4;
+    font-weight: 300;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — TABLET (≤ 1024px)
+   ══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    body { padding: 36px 18px 60px; }
+
+    .upitnik { max-width: 680px; }
+    .upitnik-header { padding: 38px 40px 34px; }
+    .upitnik-header h1 { padding: 18px 26px; }
+
+    form { padding: 38px 32px 42px; }
+    .uvod-telo { padding: 34px 36px 40px; }
+
+    .sekcija { margin-bottom: 44px; }
+    .sekcija-zaglavlje { margin-bottom: 24px; }
+
+    /* Side-by-side option + description: keep but tighten breathing room */
+    .opcija-red-opis { gap: 12px; }
+    .opcija-red-opis > .opcija { min-width: 140px; }
+    .opcija-opis { max-width: 260px; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — NARROW TABLET / LARGE PHONE (≤ 760px)
+   Stack composite question patterns before they squeeze.
+   ══════════════════════════════════════════ */
+@media (max-width: 760px) {
+    /* Radio with side description → stack vertically */
+    .opcija-red-opis {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 8px 0 12px;
+    }
+    .opcija-red-opis > .opcija {
+        min-width: 0;
+    }
+    .opcija-red-opis > .pojam {
+        padding-left: 28px;
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
+    /* Inline opis pill inside .opcija (where used) */
+    .opcija-opis {
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    /* "Pitanje sa opisom" (options left, info right) → stack */
+    .pitanje-sa-opisom {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — MOBILE (≤ 640px)
+   The Likert grid pivots: question stacks above a
+   full-width row of buttons so labels never get crushed.
+   ══════════════════════════════════════════ */
+@media (max-width: 640px) {
+    body {
+        padding: 0 0 40px;
+        background: var(--bg-page);
+    }
+
+    .upitnik {
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .upitnik-header {
+        padding: 30px 22px 26px;
+    }
+    .upitnik-header h1 {
+        padding: 16px 20px;
+        font-size: clamp(1.4rem, 5.8vw, 1.85rem);
+        line-height: 1.22;
+    }
+    .badge {
+        font-size: 0.6rem;
+        padding: 4px 9px;
+        letter-spacing: 0.12em;
+        margin-bottom: 18px;
+        line-height: 1.4;
+    }
+    .uputstvo {
+        font-size: 0.82rem;
+        line-height: 1.65;
+    }
+
+    form {
+        padding: 28px 18px 32px;
+        margin: 0 8px 8px;
+        border-radius: 4px;
+    }
+
+    .sekcija { margin-bottom: 40px; }
+    .sekcija-zaglavlje {
+        margin-bottom: 20px;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding-bottom: 10px;
+    }
+    .sekcija-naslov { font-size: 0.95rem; }
+
+    .skala-naslov {
+        font-size: 1.1rem;
+    }
+    .skala-naslov::before {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        margin-bottom: 6px;
+    }
+    .skala-uputstvo {
+        font-size: 0.88rem;
+        padding: 11px 14px 11px 15px;
+        margin-bottom: 20px;
+        line-height: 1.55;
+    }
+
+    .dimenzija-naslov {
+        font-size: 0.98rem;
+        margin: 26px 0 10px;
+        gap: 12px;
+    }
+    .dimenzija-naslov::before {
+        width: 24px;
+    }
+
+    .pitanje {
+        margin-bottom: 22px;
+        padding-bottom: 22px;
+    }
+    .pitanje-tekst {
+        font-size: 0.74rem;
+        margin-bottom: 12px;
+        letter-spacing: 0.07em;
+    }
+
+    /* Radio rows — comfortable tap targets */
+    .opcija span {
+        font-size: 0.92rem;
+        padding: 11px 12px;
+    }
+    .opcija span::before {
+        width: 17px;
+        height: 17px;
+        min-width: 17px;
+    }
+
+    /* Inputs scaled for touch (≥ 44px tap target) */
+    .unos-broj {
+        font-size: 1rem;
+        padding: 11px 14px;
+        width: 100%;
+        max-width: 150px;
+    }
+    .unos-linija {
+        font-size: 0.95rem;
+        max-width: 100%;
+    }
+    .unos-drugo {
+        font-size: 0.92rem;
+        width: 100%;
+        max-width: 220px;
+    }
+    .unos-suffix { font-size: 0.85rem; }
+
+    /* ─────────── LIKERT mobile pivot ─────────── */
+    .likert-blok { margin-bottom: 28px; }
+
+    .likert-zaglavlje {
+        grid-template-columns: 1fr;
+        padding: 14px 14px 12px;
+        gap: 10px;
+    }
+    .likert-pitanje {
+        font-size: 0.78rem;
+        line-height: 1.45;
+    }
+    .likert-brojevi {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        width: 100%;
+    }
+    .likert-brojevi span {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+        gap: 4px;
+    }
+    .likert-brojevi span b {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+    }
+    .likert-brojevi span small {
+        font-size: 0.58rem;
+        line-height: 1.25;
+        max-width: 100%;
+        min-height: 1.5em; /* keep numbers vertically aligned across columns */
+    }
+
+    /* Each Likert row stacks: label on top, full-width buttons below */
+    .likert-red {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px 14px 16px;
+    }
+    .likert-stavka {
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+    .likert-stavka-broj {
+        font-size: 0.7rem;
+        margin-right: 4px;
+    }
+    .likert-opcije {
+        width: 100%;
+        gap: 6px;
+        justify-content: space-between;
+    }
+    .likert-opcija { flex: 1; }
+    .likert-opcija span {
+        width: 100%;
+        height: 40px;
+        font-size: 0.95rem;
+        border-radius: var(--r-mali);
+    }
+
+    /* 7-step uses the same fluid grid */
+    .likert-7 .likert-brojevi { gap: 4px; }
+    .likert-7 .likert-brojevi span b { width: 22px; height: 22px; font-size: 0.78rem; }
+    .likert-7 .likert-brojevi span small { font-size: 0.52rem; }
+    .likert-7 .likert-opcije { gap: 4px; }
+    .likert-7 .likert-opcija span {
+        width: 100%;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    /* Consent + signature */
+    .saglasnost-blok {
+        padding: 20px 18px;
+        margin-bottom: 28px;
+    }
+    .saglasnost-tekst { font-size: 0.83rem; }
+    .unos-saglasnost {
+        max-width: 100%;
+        padding: 11px 14px;
+        font-size: 1rem;
+    }
+
+    .potpis-wrapper { max-width: 100%; }
+    .potpis-canvas {
+        width: 100%;
+        max-width: 100%;
+        height: 130px;
+    }
+    .potpis-akcije {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .potpis-hint {
+        font-size: 0.7rem;
+        flex: 1 1 100%;
+        order: 2;
+    }
+    .potpis-obrisi { order: 1; }
+
+    /* Submit — full width, easier thumb target */
+    .podnozje-forme {
+        justify-content: stretch;
+        padding-top: 24px;
+    }
+    .dugme-submit {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 0.9rem;
+    }
+
+    /* ─── Intro page ─── */
+    .uvod-telo {
+        padding: 28px 20px 32px;
+        margin: 0 8px 8px;
+    }
+    .uvod-tekst {
+        font-size: 0.86rem;
+        line-height: 1.7;
+        margin-bottom: 28px;
+    }
+    .aktivnosti {
+        grid-template-columns: 1fr;
+    }
+    .dugme-aktivnost {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+        gap: 14px;
+        padding: 16px 18px;
+    }
+    .akt-ikona {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — SMALL PHONE (≤ 400px)
+   Last-mile tightening for iPhone SE-class screens.
+   ══════════════════════════════════════════ */
+@media (max-width: 400px) {
+    .upitnik-header { padding: 26px 16px 22px; }
+    .upitnik-header h1 {
+        font-size: 1.4rem;
+        padding: 14px 16px;
+    }
+    .badge {
+        font-size: 0.56rem;
+        letter-spacing: 0.1em;
+    }
+
+    form {
+        padding: 22px 14px 28px;
+        margin: 0 4px 4px;
+    }
+    .uvod-telo {
+        padding: 22px 14px 26px;
+        margin: 0 4px 4px;
+    }
+
+    .pitanje-tekst { font-size: 0.7rem; }
+    .opcija span { font-size: 0.9rem; padding: 10px 10px; }
+
+    .likert-zaglavlje { padding: 12px 10px 10px; }
+    .likert-pitanje { font-size: 0.74rem; }
+    .likert-red { padding: 12px 10px 14px; }
+    .likert-stavka { font-size: 0.86rem; }
+    .likert-brojevi { gap: 4px; }
+    .likert-brojevi span b { width: 22px; height: 22px; font-size: 0.78rem; }
+    .likert-brojevi span small { font-size: 0.54rem; }
+    .likert-opcije { gap: 4px; }
+    .likert-opcija span { height: 38px; font-size: 0.9rem; }
+
+    .likert-7 .likert-brojevi span b { width: 19px; height: 19px; font-size: 0.7rem; }
+    .likert-7 .likert-opcija span { height: 34px; font-size: 0.8rem; }
+
+    .saglasnost-blok { padding: 18px 14px; }
+    .potpis-canvas { height: 115px; }
+
+    .dugme-aktivnost { padding: 14px 14px; }
+    .akt-ime { font-size: 0.82rem; }
+}
+
+/* ══════════════════════════════════════════
+   TOUCH DEVICES — neutralize sticky hover
+   Keyboard focus rings remain intact.
+   ══════════════════════════════════════════ */
+@media (hover: none) {
+    .opcija:hover span { background: transparent; }
+    .opcija:hover span::before { border-color: var(--ivica-jak); }
+    .opcija input[type="radio"]:checked + span { background: var(--plava-sv); }
+    .opcija input[type="radio"]:checked + span::before {
+        background: var(--plava);
+        border-color: var(--plava);
+    }
+
+    .opcije-red.ima-izbor .opcija.neizabrana:hover span {
+        opacity: 0.6;
+        background: transparent;
+    }
+
+    .likert-red:hover { background: transparent; }
+    .likert-opcija:hover span {
+        background: var(--povrsina);
+        border-color: var(--ivica);
+        color: var(--tekst-slab);
+    }
+    .likert-opcija input[type="radio"]:checked + span {
+        background: var(--plava);
+        border-color: var(--plava);
+        color: #fff;
+    }
+
+    .dugme-aktivnost:hover { background: var(--povrsina); }
+    .dugme-aktivnost:hover .akt-ime { color: var(--tekst); }
+
+    .dugme-submit:hover {
+        background: var(--plava);
+        box-shadow: 0 2px 8px oklch(0.34 0.09 250 / 0.2);
+    }
+
+    .potpis-obrisi:hover {
+        border-color: var(--ivica);
+        color: var(--tekst-slab);
+        background: none;
+    }
+}
+
+/* ══════════════════════════════════════════
+   ORIENTATION — short landscape phones
+   Cap header height so the form is visible above the fold.
+   ══════════════════════════════════════════ */
+@media (max-height: 480px) and (orientation: landscape) and (max-width: 900px) {
+    .upitnik-header { padding: 20px 28px 18px; }
+    .upitnik-header h1 {
+        font-size: 1.3rem;
+        padding: 12px 18px;
+        margin-bottom: 12px;
+    }
+    .badge { margin-bottom: 12px; }
+}
+

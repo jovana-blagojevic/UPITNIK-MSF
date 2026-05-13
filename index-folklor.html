@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upitnik — Folklorne aktivnosti</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="upitnik">
+
+        <header class="upitnik-header">
+            <div class="badge">Pedagoški fakultet u Somboru · Akademija umetnosti · Univerzitet Novi Sad</div>
+            <h1>Folklorne grupne aktivnosti<br><em>Kvantitativno istraživanje</em></h1>
+            <p class="uputstvo">Anonimno · 6 sekcija · popunjavanje traje oko 8 minuta</p>
+        </header>
+
+        <form id="forma">
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 1: DEMOGRAFSKI PODACI
+                 ═══════════════════════════════ -->
+            <section class="sekcija" id="demografija">
+                <p class="skala-naslov">Osnovni podaci</p>
+                <p class="skala-uputstvo">Popunite osnovne podatke o sebi i Vašoj folklornoj aktivnosti.</p>
+
+                <!-- Pol -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst">Pol</label>
+                    <div class="opcije-red">
+                        <label class="opcija"><input type="radio" name="pol" value="muski"><span>Muški</span></label>
+                        <label class="opcija"><input type="radio" name="pol" value="zenski"><span>Ženski</span></label>
+                        <label class="opcija"><input type="radio" name="pol" value="drugo"><span>Drugo</span></label>
+                        <label class="opcija"><input type="radio" name="pol" value="ne_zelim"><span>Ne želim da odgovorim</span></label>
+                    </div>
+                </div>
+
+                <!-- Godine -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst" for="godine">Godine starosti</label>
+                    <div class="unos-wrapper">
+                        <input type="number" id="godine" name="godine" min="18" max="80" placeholder="npr. 28" class="unos-broj">
+                        <span class="unos-suffix">god.</span>
+                    </div>
+                </div>
+
+                <!-- Vrsta folklornog ansambla -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst">Vrsta folklornog ansambla</label>
+                    <div class="opcije-red">
+                        <label class="opcija"><input type="radio" name="vrsta_folklora" value="kud"><span>Kulturno-umetničko društvo (KUD)</span></label>
+                        <label class="opcija"><input type="radio" name="vrsta_folklora" value="profesionalni"><span>Profesionalni folklorni ansambl</span></label>
+                        <label class="opcija"><input type="radio" name="vrsta_folklora" value="sekcija"><span>Folklorna sekcija</span></label>
+                        <label class="opcija opcija-drugo"><input type="radio" name="vrsta_folklora" value="drugo"><span>Drugo: <input type="text" class="unos-drugo" name="vrsta_folklora_drugo" placeholder="unesite vrstu…" tabindex="-1"></span></label>
+                    </div>
+                </div>
+
+                <!-- Nivo angažovanja -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst">Nivo angažovanja</label>
+                    <div class="opcije-sa-opisom">
+                        <div class="opcija-red-opis">
+                            <label class="opcija"><input type="radio" name="nivo" value="amater"><span>Amater</span></label>
+                            <div class="pojam">Osoba koja se folklorom bavi aktivno i redovno, ali bez finansijske naknade. Može imati formalno obrazovanje ili visok nivo veštine, ali ova aktivnost nije njen glavni poziv ni izvor prihoda.</div>
+                        </div>
+                        <div class="opcija-red-opis">
+                            <label class="opcija"><input type="radio" name="nivo" value="rekreativac"><span>Rekreativac</span></label>
+                            <div class="pojam">Osoba koja se folklorom bavi povremeno, u slobodno vreme, prvenstveno radi zabave, opuštanja ili zdravlja. Nema obavezu redovnog vežbanja ni nastupa/takmičenja.</div>
+                        </div>
+                        <div class="opcija-red-opis">
+                            <label class="opcija"><input type="radio" name="nivo" value="profesionalac"><span>Profesionalac</span></label>
+                            <div class="pojam">Osoba koja se folklorom bavi kao glavnim zanimanjem i za to prima finansijsku naknadu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dužina učešća -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst" for="duzina">Koliko godina učestvujete u ovom ansamblu?</label>
+                    <div class="unos-wrapper">
+                        <input type="number" id="duzina" name="duzina" min="0" max="60" placeholder="npr. 5" class="unos-broj">
+                        <span class="unos-suffix">god.</span>
+                    </div>
+                </div>
+
+                <!-- Prethodni ansambl -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst">Ukoliko ste pre ovog ansambla pohađali neki drugi, molimo Vas da navedete koji i koliko dugo</label>
+                    <div class="unos-wrapper">
+                        <input type="text" id="prethodna_aktivnost" name="prethodna_aktivnost" placeholder="npr. KUD, folklorna sekcija…" class="unos-linija">
+                    </div>
+                    <div class="opcije-red" style="margin-top: 10px;">
+                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="amater"><span>Amater</span></label>
+                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="rekreativac"><span>Rekreativac</span></label>
+                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="profesionalac"><span>Profesionalac</span></label>
+                    </div>
+                    <div class="unos-wrapper" style="margin-top: 10px;">
+                        <input type="number" id="prethodna_trajanje" name="prethodna_trajanje" min="0" max="60" placeholder="npr. 3" class="unos-broj">
+                        <span class="unos-suffix">god.</span>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 2: MHC-SF
+                 ═══════════════════════════════ -->
+            <section class="sekcija">
+                <p class="skala-naslov">Mental Health Continuum – Short Form (MHC-SF)</p>
+                <p class="skala-uputstvo">Tokom prethodnog meseca, koliko često ste se osećali:</p>
+
+                <div class="likert-blok">
+                    <div class="likert-zaglavlje">
+                        <div class="likert-pitanje">Tokom prethodnog meseca, koliko često ste se osećali:</div>
+                        <div class="likert-brojevi">
+                            <span><b>0</b><small>Nikada</small></span>
+                            <span><b>1</b><small>Jednom ili dvaput</small></span>
+                            <span><b>2</b><small>Oko jednom nedeljno</small></span>
+                            <span><b>3</b><small>Oko 2–3× nedeljno</small></span>
+                            <span><b>4</b><small>Skoro svaki dan</small></span>
+                            <span><b>5</b><small>Svaki dan</small></span>
+                        </div>
+                    </div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">1.</span> srećno</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc1" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc1" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc1" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc1" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc1" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc1" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">2.</span> zainteresovano za život</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc2" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc2" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc2" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc2" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc2" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc2" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">3.</span> zadovoljno životom</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc3" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc3" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc3" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc3" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc3" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc3" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">4.</span> da imate nešto važno da doprinesete društvu</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc4" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc4" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc4" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc4" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc4" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc4" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">5.</span> da pripadate zajednici (kao što je komšiluk, grad ili zemlja)</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc5" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc5" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc5" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc5" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc5" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc5" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">6.</span> da naše društvo postaje bolje mesto za ljude</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc6" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc6" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc6" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc6" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc6" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc6" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">7.</span> da su ljudi u osnovi dobri</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc7" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc7" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc7" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc7" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc7" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc7" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">8.</span> da razumete kako naše društvo funkcioniše</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc8" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc8" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc8" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc8" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc8" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc8" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">9.</span> da volite većinu aspekata svoje ličnosti</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc9" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc9" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc9" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc9" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc9" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc9" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">10.</span> da dobro upravljate odgovornostima svakodnevnog života</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc10" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc10" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc10" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc10" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc10" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc10" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">11.</span> da imate tople i poverljive odnose sa drugima</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc11" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc11" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc11" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc11" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc11" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc11" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">12.</span> da imate iskustva koja Vas podstiču na rast i razvoj kao osobu</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc12" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc12" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc12" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc12" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc12" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc12" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">13.</span> sigurno u iznošenju sopstvenih ideja i mišljenja</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc13" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc13" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc13" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc13" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc13" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc13" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">14.</span> da Vaš život ima smisao i svrhu</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="mhc14" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="mhc14" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="mhc14" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="mhc14" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="mhc14" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="mhc14" value="5"><span>5</span></label></div></div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 3: SPS-10
+                 ═══════════════════════════════ -->
+            <section class="sekcija">
+                <p class="skala-naslov">Social Provision Scale (SPS-10)</p>
+                <p class="skala-uputstvo">Pročitajte svaku tvrdnju i označite u kojoj meri se sa njom slažete.</p>
+
+                <div class="likert-blok">
+                    <div class="likert-zaglavlje">
+                        <div class="likert-pitanje">U kojoj meri se slažete sa sledećim tvrdnjama:</div>
+                        <div class="likert-brojevi">
+                            <span><b>1</b><small>Uopšte se ne slažem</small></span>
+                            <span><b>2</b><small>Ne slažem se</small></span>
+                            <span><b>3</b><small>Slažem se</small></span>
+                            <span><b>4</b><small>Potpuno se slažem</small></span>
+                        </div>
+                    </div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">1.</span> Postoji posebna osoba koja mi je bliska i u čijem se prisustvu osećam sigurno.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps1" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps1" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps1" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps1" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">2.</span> Imam osećaj da sam deo grupe ljudi koji dele moje stavove i interesovanja.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps2" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps2" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps2" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps2" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">3.</span> Ima osoba koje bi mi se obratile za savet jer cene moje mišljenje.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps3" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps3" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps3" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps3" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">4.</span> Postoji osoba na koju se mogu osloniti ako mi zatreba pomoć.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps4" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps4" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps4" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps4" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">5.</span> Ima neko sa kim mogu slobodno razgovarati o problemima koji me muče.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps5" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps5" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps5" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps5" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">6.</span> Postoje osobe čija me dobrobit zanima i kojima mogu pružiti pomoć i podršku.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps6" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps6" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps6" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps6" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">7.</span> Ima neko sa kim mogu podeliti i radost i tugu.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps7" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps7" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps7" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps7" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">8.</span> Imam bliske veze sa grupom prijatelja.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps8" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps8" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps8" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps8" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">9.</span> Postoje osobe koje me cene i prepoznaju moje vrednosti i sposobnosti.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps9" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps9" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps9" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps9" value="4"><span>4</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">10.</span> Ima neko na koga se mogu osloniti ako mi zatreba pomoć ili savet u teškim situacijama.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="sps10" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="sps10" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="sps10" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="sps10" value="4"><span>4</span></label></div></div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 4: WHO-5
+                 ═══════════════════════════════ -->
+            <section class="sekcija">
+                <p class="skala-naslov">WHO-5 Well-Being Index</p>
+                <p class="skala-uputstvo">Tokom poslednjih dve nedelje:</p>
+
+                <div class="likert-blok">
+                    <div class="likert-zaglavlje">
+                        <div class="likert-pitanje">Tokom poslednjih dve nedelje, koliko često ste se osećali:</div>
+                        <div class="likert-brojevi">
+                            <span><b>0</b><small>Nikad</small></span>
+                            <span><b>1</b><small>Ponekad</small></span>
+                            <span><b>2</b><small>Manje od polovine</small></span>
+                            <span><b>3</b><small>Više od polovine</small></span>
+                            <span><b>4</b><small>Većinu vremena</small></span>
+                            <span><b>5</b><small>Sve vreme</small></span>
+                        </div>
+                    </div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">1.</span> Osećao/la sam se vedro i raspoloženo.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="who1" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="who1" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="who1" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="who1" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="who1" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="who1" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">2.</span> Osećao/la sam se smireno i opušteno.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="who2" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="who2" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="who2" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="who2" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="who2" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="who2" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">3.</span> Osećao/la sam se aktivno i snažno.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="who3" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="who3" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="who3" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="who3" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="who3" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="who3" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">4.</span> Probudio/la sam se svež/a i odmoran/na.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="who4" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="who4" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="who4" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="who4" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="who4" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="who4" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">5.</span> Moj svakodnevni život bio je ispunjen stvarima koje me zanimaju.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="who5" value="0"><span>0</span></label><label class="likert-opcija"><input type="radio" name="who5" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="who5" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="who5" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="who5" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="who5" value="5"><span>5</span></label></div></div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 5: SWLS
+                 ═══════════════════════════════ -->
+            <section class="sekcija">
+                <p class="skala-naslov">Satisfaction With Life Scale (SWLS)</p>
+                <p class="skala-uputstvo">Pročitajte svaku tvrdnju i naznačite u kojoj meri se sa njom slažete.</p>
+
+                <div class="likert-blok likert-7">
+                    <div class="likert-zaglavlje">
+                        <div class="likert-pitanje">U kojoj meri se slažete sa sledećim tvrdnjama o svom životu:</div>
+                        <div class="likert-brojevi">
+                            <span><b>1</b><small>Uopšte se ne slažem</small></span>
+                            <span><b>2</b><small>Ne slažem se</small></span>
+                            <span><b>3</b><small>Blago se ne slažem</small></span>
+                            <span><b>4</b><small>Niti se slažem niti ne</small></span>
+                            <span><b>5</b><small>Blago se slažem</small></span>
+                            <span><b>6</b><small>Slažem se</small></span>
+                            <span><b>7</b><small>U potpunosti se slažem</small></span>
+                        </div>
+                    </div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">1.</span> U većini aspekata, moj život je blizak mom idealu.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="swls1" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="5"><span>5</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="6"><span>6</span></label><label class="likert-opcija"><input type="radio" name="swls1" value="7"><span>7</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">2.</span> Uslovi mog života su izvrsni.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="swls2" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="5"><span>5</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="6"><span>6</span></label><label class="likert-opcija"><input type="radio" name="swls2" value="7"><span>7</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">3.</span> Zadovoljan/na sam svojim životom.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="swls3" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="5"><span>5</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="6"><span>6</span></label><label class="likert-opcija"><input type="radio" name="swls3" value="7"><span>7</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">4.</span> Do sada sam u životu postigao/la važne stvari koje sam želeo/la.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="swls4" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="5"><span>5</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="6"><span>6</span></label><label class="likert-opcija"><input type="radio" name="swls4" value="7"><span>7</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">5.</span> Kada bih mogao/la da živim život iznova, gotovo ništa ne bih menjao/la.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="swls5" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="5"><span>5</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="6"><span>6</span></label><label class="likert-opcija"><input type="radio" name="swls5" value="7"><span>7</span></label></div></div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════
+                 SEKCIJA 6: FAS
+                 ═══════════════════════════════ -->
+            <section class="sekcija">
+                <p class="skala-naslov">Fatigue Assessment Scale (FAS)</p>
+                <p class="skala-uputstvo">Označite u kojoj meri se svaka od sledećih tvrdnji odnosi na Vas.</p>
+
+                <div class="likert-blok">
+                    <div class="likert-zaglavlje">
+                        <div class="likert-pitanje">U kojoj meri se svaka tvrdnja odnosi na Vas:</div>
+                        <div class="likert-brojevi">
+                            <span><b>1</b><small>Nikada</small></span>
+                            <span><b>2</b><small>Ponekad</small></span>
+                            <span><b>3</b><small>Regularno</small></span>
+                            <span><b>4</b><small>Često</small></span>
+                            <span><b>5</b><small>Uvek</small></span>
+                        </div>
+                    </div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">1.</span> Umor mi predstavlja problem.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas1" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas1" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas1" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas1" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas1" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">2.</span> Brzo se zamaram.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas2" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas2" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas2" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas2" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas2" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">3.</span> Tokom dana ne radim mnogo.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas3" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas3" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas3" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas3" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas3" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">4.</span> Imam dovoljno energije za svakodnevni život.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas4" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas4" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas4" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas4" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas4" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">5.</span> Fizički se osećam iscrpljeno.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas5" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas5" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas5" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas5" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas5" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">6.</span> Imam problema sa započinjanjem aktivnosti.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas6" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas6" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas6" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas6" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas6" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">7.</span> Imam problema sa jasnim razmišljanjem.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas7" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas7" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas7" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas7" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas7" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">8.</span> Ne osećam želju da radim bilo šta.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas8" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas8" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas8" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas8" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas8" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">9.</span> Mentalno se osećam iscrpljeno.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas9" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas9" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas9" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas9" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas9" value="5"><span>5</span></label></div></div>
+                    <div class="likert-red pitanje"><label class="likert-stavka"><span class="likert-stavka-broj">10.</span> Kada radim nešto, mogu da se dobro koncentrišem.</label><div class="likert-opcije"><label class="likert-opcija"><input type="radio" name="fas10" value="1"><span>1</span></label><label class="likert-opcija"><input type="radio" name="fas10" value="2"><span>2</span></label><label class="likert-opcija"><input type="radio" name="fas10" value="3"><span>3</span></label><label class="likert-opcija"><input type="radio" name="fas10" value="4"><span>4</span></label><label class="likert-opcija"><input type="radio" name="fas10" value="5"><span>5</span></label></div></div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════
+                 POTVRDA SAGLASNOSTI
+                 ═══════════════════════════════ -->
+            <div class="pitanje saglasnost-blok">
+                <label class="pitanje-tekst" for="saglasnost">Potvrda dobrovoljne saglasnosti</label>
+                <p class="saglasnost-tekst">
+                    Potvrđujem da sam dobrovoljno i anonimno učestvovao/la u ovom istraživanju, da sam upoznat/a sa njegovom svrhom i da sam saglasan/na sa upotrebom prikupljenih podataka isključivo u naučne svrhe. Kao potvrdu, molimo Vas da unesete kombinaciju slova ili simbol po sopstvenom izboru (npr. "AB", "★", "XY").
+                </p>
+                <div class="potpis-wrapper">
+                    <canvas id="saglasnost-canvas" class="potpis-canvas prazno" width="640" height="240"></canvas>
+                    <div class="potpis-akcije">
+                        <span class="potpis-hint">Potpišite se prstom ili mišem</span>
+                        <button type="button" class="potpis-obrisi" onclick="potpis_obrisi('saglasnost-canvas')">Obriši</button>
+                    </div>
+                </div>
+                <input type="hidden" name="saglasnost" id="saglasnost">
+            </div>
+
+            <div class="podnozje-forme">
+                <button type="submit" class="dugme-submit">
+                    <span>Pošalji upitnik</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
