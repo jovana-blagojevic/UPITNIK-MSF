@@ -1,4 +1,21 @@
 /* ══════════════════════════════════════════
+   LOCAL STORAGE — blokiranje ponovnog popunjavanja
+   ══════════════════════════════════════════ */
+(function() {
+    const forma = document.getElementById('forma');
+    if (!forma) return;
+    const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
+    if (!tip) return;
+    if (localStorage.getItem('upitnik_popunjen_' + tip) === 'da') {
+        forma.closest('.upitnik').innerHTML =
+            '<div class="hvala">' +
+            '<p>Već ste popunili ovaj upitnik.</p>' +
+            '<p>Vaši odgovori su zabeleženi. Hvala Vam na učešću!</p>' +
+            '</div>';
+    }
+})();
+
+/* ══════════════════════════════════════════
    DRUGO — aktivacija tekst polja
    ══════════════════════════════════════════ */
 document.querySelectorAll('.opcija-drugo input[type="radio"]').forEach(function(radio) {
@@ -65,7 +82,6 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
         if (!imaTracka) {
             imaTracka = true;
             canvas.classList.remove('prazno');
-            // Upiši data URL u hidden input
             const hidden = document.getElementById('saglasnost');
             if (hidden) hidden.value = 'potpis';
         }
@@ -213,5 +229,39 @@ forma.addEventListener('submit', (e) => {
         return;
     }
 
-    alert('Hvala na popunjenom upitniku!');
+    /* ── Slanje podataka na Google Sheets ── */
+    const podaci = {};
+    const fd = new FormData(forma);
+    fd.forEach((vrednost, kljuc) => {
+        podaci[kljuc] = kljuc === 'saglasnost' ? 'da' : vrednost;
+    });
+    podaci.token = window.UPITNIK_TOKEN;
+
+    const dugme = forma.querySelector('[type="submit"]');
+    dugme.disabled = true;
+    dugme.textContent = 'Šalje se…';
+
+    fetch(window.UPITNIK_URL, {
+        method: 'POST',
+        body: JSON.stringify(podaci)
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(odgovor) {
+        if (odgovor.status === 'ok') {
+            const tip = podaci.tip_upitnika;
+            if (tip) localStorage.setItem('upitnik_popunjen_' + tip, 'da');
+            forma.closest('.upitnik').innerHTML =
+                '<div class="hvala">' +
+                '<p>Hvala na popunjenom upitniku!</p>' +
+                '<p>Vaši odgovori su uspešno zabeleženi.</p>' +
+                '</div>';
+        } else {
+            throw new Error(odgovor.greska || 'Nepoznata greška');
+        }
+    })
+    .catch(function() {
+        dugme.disabled = false;
+        dugme.textContent = 'Pošalji';
+        alert('Došlo je do greške pri slanju. Molimo pokušajte ponovo.');
+    });
 });
