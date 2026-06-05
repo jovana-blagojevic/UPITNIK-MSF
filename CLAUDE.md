@@ -8,22 +8,29 @@ Always invoke the `frontend-design` skill when making any UI, layout, or styling
 
 ## Project overview
 
-**Upitnik** is a static multi-page research survey conducted jointly by the Faculty of Education in Sombor (Pedagoški fakultet u Somboru) and the Academy of Arts, University of Novi Sad. Participants of group music, sport, or folklore activities fill in demographic questions and five validated psychological scales (MHC-SF, SPS-10, WHO-5, SWLS, FAS), then sign a canvas consent block.
+**Upitnik** is a static multi-page research survey conducted jointly by the Faculty of Education in Sombor (Pedagoški fakultet u Somboru) and the Academy of Arts, University of Novi Sad. Participants of group music, sport, or folklore activities first pick their activity group, then their engagement level (amater / rekreativac / profesionalac), then fill in demographic questions and five validated psychological scales (MHC-SF, SPS-10, WHO-5, SWLS, FAS), then sign a canvas consent block.
 
-On submit, the form currently shows a thank-you `alert()` — there is no backend endpoint. Form data is not sent anywhere.
+The participant flow is three steps: `index.html` (pick group) → `nivo-{grupa}.html` (pick engagement level) → `index-{grupa}.html?nivo={nivo}` (the questionnaire, pre-filtered to that level). The chosen level arrives in the questionnaire via the `?nivo=` query param; opening a questionnaire without a valid `?nivo=` redirects back to `nivo-{grupa}.html`.
+
+On submit (after client-side validation), the form POSTs the collected answers as JSON to a Google Apps Script endpoint read from `config.js` (`window.UPITNIK_URL` / `window.UPITNIK_TOKEN`; copy `config.example.js` → `config.js`, which is gitignored). On success it sets a `localStorage` flag (`upitnik_popunjen_{tip}`) to block re-submission and swaps the card for a `.hvala` thank-you message; on network/error it shows an `alert()`.
 
 No build step. No package manager. No test runner. Open any `.html` file directly in a browser to develop.
 
 ## File structure
 
 ```
-intro.html          — Landing page: participant selects their activity group
+index.html          — Landing page: participant selects their activity group
+nivo-muzika.html    — Music: pick engagement level → index-muzika.html?nivo=…
+nivo-sport.html     — Sport: pick engagement level → index-sport.html?nivo=…
+nivo-folklor.html   — Folklore: pick engagement level → index-folklor.html?nivo=…
 index-muzika.html   — Music questionnaire
 index-sport.html    — Sports questionnaire
 index-folklor.html  — Folklore questionnaire
 style.css           — All styles; single source of truth for the design system
-script.js           — Form behaviour: "Drugo" input activation, canvas signature, validation
+script.js           — Form behaviour: nivo from URL, "Drugo" input activation, canvas signature, validation
 ```
+
+The three `nivo-*.html` pages share the landing-page shell (`.upitnik-header` + `.uvod-telo`) and present the three level options as clickable cards (`.nivo-izbor` / `.dugme-nivo`), each linking to the matching questionnaire with `?nivo=amater|rekreativac|profesionalac`.
 
 ## Architecture
 
@@ -32,12 +39,13 @@ script.js           — Form behaviour: "Drugo" input activation, canvas signatu
 Each questionnaire is structured as:
 1. `.upitnik-header` — dark charcoal header with badge + H1
 2. `<form id="forma">` — cream panel inside the dark card
+   - `<input type="hidden" name="nivo">` — engagement level, filled from `?nivo=` (the level is chosen on `nivo-{grupa}.html`, not inside the form)
    - `<section class="sekcija" id="demografija">` — activity-specific demographic questions
    - Five `<section class="sekcija">` blocks, one per scale (MHC-SF, SPS-10, WHO-5, SWLS, FAS)
    - `.saglasnost-blok` — canvas signature consent block
    - `.podnozje-forme` — submit button
 
-The demographic section is the only part that differs between questionnaires. The five scales are identical across all three.
+The demographic section differs between questionnaires. The five shared scales are identical across all three. **Muzika** and **sport** additionally have level-dependent sections (Fizička dobrobit, Odnos sa liderom, Negativni faktori) built as `.nivo-blok` elements with `data-nivo="amater|rekreativac|profesionalac"`; only the block matching the chosen `nivo` is shown. **Folklor** records `nivo` but has no level-dependent sections.
 
 ## Design system (style.css)
 
@@ -68,19 +76,23 @@ The `.upitnik` card uses a hard-coded `background: #4D4B47` (dark charcoal), not
 
 **Radio option variants:**
 - `.opcije-red` / `.opcija` — standard pill-style radio rows (used in demographics)
-- `.opcije-sa-opisom` / `.opcija-red-opis` — side-by-side radio + definition text (used for Amater/Rekreativac/Profesionalac)
 - `.likert-blok` / `.likert-red` / `.likert-opcija` — Likert scale rows with rectangular buttons
 - `.likert-7` modifier — narrows buttons for 7-point SWLS scale
+
+**Level-selection cards (`nivo-*.html`):**
+- `.nivo-izbor` / `.dugme-nivo` — clickable level cards (name + definition + arrow) that navigate to `index-{grupa}.html?nivo=…`
+- The Amater/Rekreativac/Profesionalac choice lives on `nivo-*.html`; the questionnaire only records it in the hidden `name="nivo"` input (no in-form display)
 
 **Input variants:**
 - `.unos-broj` — number input with box border
 - `.unos-linija` — text input with bottom border only
-- `.unos-saglasnost` — consent name input
 - `.unos-drugo` — inline text field inside a radio label (disabled until parent radio is selected)
 
 ## Form behaviour (script.js)
 
-Three independent features:
+Independent features:
+
+0. **Nivo from URL** — on load, reads `?nivo=` (must be `amater`/`rekreativac`/`profesionalac`). If missing/invalid, redirects to `nivo-{tip_upitnika}.html`. Otherwise writes the value into the hidden `name="nivo"` input, then reveals the matching `.nivo-blok` (and resets/hides the others). For rekreativac, the `.vodja-blok` leader questions stay hidden until `r_ima_vodju="da"`.
 
 1. **"Drugo" activation** — when a radio with class `.opcija-drugo` is selected, its sibling `.unos-drugo` input becomes interactive. Deselecting it disables the input again.
 
@@ -94,5 +106,5 @@ Note: the `vrsta_sporta` and `vrsta_folklora_drugo` text inputs are **not valida
 
 - All text is Serbian, Latin script, sentence case.
 - Formal address throughout ("Vi", "Vas", "Vaš").
-- Scale names keep their English acronyms (MHC-SF, SPS-10, etc.) as `.skala-naslov` headings.
+- Sections have no visible title heading; each section opens directly with its `.skala-uputstvo` instruction. For every Likert scale that instruction ends with a `Skala: <min> = …; <max> = …` legend matching that scale's own endpoints (e.g. WHO-5 `0 = Nikad; 5 = Sve vreme`, SWLS `1 = … ; 7 = …`).
 - The `.badge` in each questionnaire header shows the full institutional affiliation.

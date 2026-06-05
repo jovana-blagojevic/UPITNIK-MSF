@@ -21,12 +21,12 @@
 
         <form id="forma">
             <input type="hidden" name="tip_upitnika" value="muzika">
+            <input type="hidden" name="nivo" id="nivo-polje">
 
             <!-- ═══════════════════════════════
                  SEKCIJA 1: DEMOGRAFSKI PODACI
                  ═══════════════════════════════ -->
             <section class="sekcija" id="demografija">
-                <p class="skala-naslov">Osnovni podaci</p>
                 <p class="skala-uputstvo">Popunite osnovne podatke o sebi i Vašoj muzičkoj aktivnosti.</p>
 
                 <!-- Pol -->
@@ -81,25 +81,6 @@
                     </div>
                 </div>
 
-                <!-- Nivo angažovanja -->
-                <div class="pitanje">
-                    <label class="pitanje-tekst">Nivo angažovanja</label>
-                    <div class="opcije-sa-opisom">
-                        <div class="opcija-red-opis">
-                            <label class="opcija"><input type="radio" name="nivo" value="amater"><span>Amater</span></label>
-                            <div class="pojam">Osoba koja se muzikom bavi aktivno i redovno, ali bez finansijske naknade. Može imati formalno obrazovanje ili visok nivo veštine, ali ova aktivnost nije njen glavni poziv ni izvor prihoda.</div>
-                        </div>
-                        <div class="opcija-red-opis">
-                            <label class="opcija"><input type="radio" name="nivo" value="rekreativac"><span>Rekreativac</span></label>
-                            <div class="pojam">Osoba koja se muzikom bavi povremeno, u slobodno vreme, prvenstveno radi zabave, opuštanja ili zdravlja. Nema obavezu redovnog vežbanja ni nastupa/takmičenja.</div>
-                        </div>
-                        <div class="opcija-red-opis">
-                            <label class="opcija"><input type="radio" name="nivo" value="profesionalac"><span>Profesionalac</span></label>
-                            <div class="pojam">Osoba koja se muzikom bavi kao glavnim zanimanjem i za to prima finansijsku naknadu.</div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Dužina učešća -->
                 <div class="pitanje">
                     <label class="pitanje-tekst" for="duzina">Koliko godina učestvujete u ovoj grupi?</label>
@@ -139,8 +120,7 @@
                  WHO-5
                  ═══════════════════════════════ -->
             <section class="sekcija">
-                <p class="skala-naslov">WHO-5 Well-Being Index</p>
-                <p class="skala-uputstvo">Molimo Vas da označite odgovor koji najbolje opisuje Vaše stanje tokom protekle dve nedelje.</p>
+                <p class="skala-uputstvo">Molimo Vas da označite odgovor koji najbolje opisuje Vaše stanje tokom protekle dve nedelje. Skala: 0 = Nikad; 5 = Sve vreme.</p>
 
                 <div class="likert-blok">
                     <div class="likert-zaglavlje">
@@ -164,7 +144,6 @@
             </section>
 
             <section class="sekcija" id="fizicka-dobrobit">
-                <p class="skala-naslov">Fizička dobrobit od muzičke aktivnosti</p>
                 <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>
@@ -231,7 +210,6 @@
                  SWLS
                  ═══════════════════════════════ -->
             <section class="sekcija">
-                <p class="skala-naslov">Satisfaction With Life Scale (SWLS)</p>
                 <p class="skala-uputstvo">U nastavku se nalazi pet tvrdnji. Koristeći skalu od 1 do 7, označite u kojoj meri se slažete sa svakom tvrdnjom. Skala: 1 = Uopšte se ne slažem; 7 = U potpunosti se slažem.</p>
 
                 <div class="likert-blok likert-7">
@@ -260,8 +238,7 @@
                  MHC-SF
                  ═══════════════════════════════ -->
             <section class="sekcija">
-                <p class="skala-naslov">Mental Health Continuum – Short Form (MHC-SF)</p>
-                <p class="skala-uputstvo">Sledeća pitanja odnose se na to kako ste se osećali tokom proteklog meseca. Označite odgovor koji najbolje opisuje koliko često ste doživeli ili osetili navedeno.</p>
+                <p class="skala-uputstvo">Sledeća pitanja odnose se na to kako ste se osećali tokom proteklog meseca. Označite odgovor koji najbolje opisuje koliko često ste doživeli ili osetili navedeno. Skala: 1 = Nikada; 6 = Svaki dan.</p>
 
                 <div class="likert-blok">
                     <div class="likert-zaglavlje">
@@ -297,8 +274,7 @@
                  SPS-10
                  ═══════════════════════════════ -->
             <section class="sekcija">
-                <p class="skala-naslov">Social Provision Scale (SPS-10)</p>
-                <p class="skala-uputstvo">Sledeće tvrdnje opisuju različite vrste podrške koje možete dobijati od drugih. Molimo Vas da označite u kojoj meri se svaka tvrdnja odnosi na Vas.</p>
+                <p class="skala-uputstvo">Sledeće tvrdnje opisuju različite vrste podrške koje možete dobijati od drugih. Molimo Vas da označite u kojoj meri se svaka tvrdnja odnosi na Vas. Skala: 1 = Uopšte se ne slažem; 4 = Potpuno se slažem.</p>
 
                 <div class="likert-blok">
                     <div class="likert-zaglavlje">
@@ -325,7 +301,6 @@
             </section>
 
             <section class="sekcija" id="odnos-sa-liderom">
-                <p class="skala-naslov">Odnos sa dirigentom / vođom ansambla / šefom orkestra</p>
                 <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>
@@ -406,8 +381,7 @@
                  FAS
                  ═══════════════════════════════ -->
             <section class="sekcija">
-                <p class="skala-naslov">Fatigue Assessment Scale (FAS)</p>
-                <p class="skala-uputstvo">Sledećih deset tvrdnji odnosi se na to kako se obično osećate. Molimo Vas da odgovorite na svako pitanje, čak i ako trenutno nemate nikakvih tegoba.</p>
+                <p class="skala-uputstvo">Sledećih deset tvrdnji odnosi se na to kako se obično osećate. Molimo Vas da odgovorite na svako pitanje, čak i ako trenutno nemate nikakvih tegoba. Skala: 1 = Nikad; 5 = Uvek.</p>
 
                 <div class="likert-blok">
                     <div class="likert-zaglavlje">
@@ -435,7 +409,6 @@
             </section>
 
             <section class="sekcija" id="negativni-faktori">
-                <p class="skala-naslov">Negativni faktori muzičkog angažmana</p>
                 <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>

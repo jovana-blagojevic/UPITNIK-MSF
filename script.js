@@ -38,20 +38,37 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 });
 
 /* ══════════════════════════════════════════
-   NIVO-ZAVISNA PITANJA (Dodatna pitanja)
-   Prikazuje blok pitanja prema izabranom nivou
-   angažovanja; za rekreativce otkriva pitanja o
-   neformalnom vođi tek ako on/ona postoji.
+   NIVO ANGAŽOVANJA (iz URL-a)
+   Nivo se bira na zasebnom ekranu (nivo-*.html) i
+   prosleđuje preko ?nivo=. Ovde se upisuje u skriveno
+   polje i prikazuju odgovarajući nivo-zavisni blokovi
+   (Fizička dobrobit, Odnos sa liderom, Negativni faktori).
+   Za rekreativce, pitanja o neformalnom vođi otkrivaju se
+   tek ako on/ona postoji.
    ══════════════════════════════════════════ */
 (function() {
-    /* Nivo-zavisni blokovi su sada raspoređeni preko više sekcija
-       (Fizička dobrobit, Odnos sa liderom, Negativni faktori), pa se
-       traže na nivou celog dokumenta. */
-    const blokovi    = document.querySelectorAll('.nivo-blok');
+    const forma = document.getElementById('forma');
+    if (!forma) return;
+    const poljeNivo = forma.querySelector('input[name="nivo"]');
+    if (!poljeNivo) return;
+
+    const VALIDNI = ['amater', 'rekreativac', 'profesionalac'];
+    const nivo = new URLSearchParams(location.search).get('nivo');
+
+    /* Bez ispravnog nivoa — vrati korisnika na izbor nivoa za ovu grupu */
+    if (VALIDNI.indexOf(nivo) === -1) {
+        const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
+        location.replace(tip ? 'nivo-' + tip + '.html' : 'index.html');
+        return;
+    }
+
+    poljeNivo.value = nivo;
+
+    /* ── Nivo-zavisni blokovi (muzika/sport; folklor ih nema) ── */
+    const blokovi = document.querySelectorAll('.nivo-blok');
     if (!blokovi.length) return;
 
-    const praznoBlokovi = document.querySelectorAll('.nivo-prazno');
-    const vodjaBlokovi  = document.querySelectorAll('.vodja-blok');
+    const vodjaBlokovi = document.querySelectorAll('.vodja-blok');
 
     /* Poništava odgovore u bloku koji se sakriva da se ne bi poslali */
     function resetBlok(blok) {
@@ -76,33 +93,20 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
         });
     }
 
-    document.querySelectorAll('input[name="nivo"]').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            if (!this.checked) return;
-            const izabran = this.value;
-            praznoBlokovi.forEach(function(prazno) { prazno.classList.add('skriveno'); });
-            blokovi.forEach(function(blok) {
-                if (blok.getAttribute('data-nivo') === izabran) blok.classList.remove('skriveno');
-                else sakrij(blok);
-            });
-            /* Pri promeni na nešto što nije rekreativac, poništi grananje o vođi */
-            if (izabran !== 'rekreativac') {
-                document.querySelectorAll('input[name="r_ima_vodju"]').forEach(function(r) { r.checked = false; });
-                prikaziVodju(false);
-            }
-        });
+    /* Prikaži blokove izabranog nivoa, sakrij ostale i prazne poruke */
+    document.querySelectorAll('.nivo-prazno').forEach(function(prazno) { prazno.classList.add('skriveno'); });
+    blokovi.forEach(function(blok) {
+        if (blok.getAttribute('data-nivo') === nivo) blok.classList.remove('skriveno');
+        else sakrij(blok);
     });
 
+    /* Rekreativac: pitanja o neformalnom vođi tek ako vođa postoji */
     document.querySelectorAll('input[name="r_ima_vodju"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
             if (!this.checked) return;
             prikaziVodju(this.value === 'da');
         });
     });
-
-    /* Početno stanje — npr. ako pregledač vrati prethodno izabran nivo */
-    const vecIzabran = document.querySelector('input[name="nivo"]:checked');
-    if (vecIzabran) vecIzabran.dispatchEvent(new Event('change', { bubbles: true }));
 })();
 
 /* ══════════════════════════════════════════
