@@ -287,7 +287,7 @@ form {
 /* ── Zasivljavanje neizabranih ── */
 .opcije-red.ima-izbor .opcija.neizabrana span {
     color: var(--tekst-slabi);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .opcije-red.ima-izbor .opcija.neizabrana:hover span {
@@ -601,6 +601,106 @@ form {
     border-left: 3px solid var(--plava-ivica);
     border-radius: 0 var(--r-mali) var(--r-mali) 0;
     font-weight: 400;
+}
+
+/* ── Napomena (definicija pojma „blagostanje") ── */
+.napomena {
+    position: relative;
+    margin: 0 0 36px;
+    padding: 22px 26px;
+    background: linear-gradient(180deg, var(--povrsina), var(--bg));
+    border: 1px solid var(--ivica-jak);
+    border-left: 4px solid var(--plava);
+    border-radius: var(--r-sredi);
+    box-shadow: var(--senka);
+}
+
+.napomena::before {
+    content: "Napomena";
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--plava);
+    margin-bottom: 10px;
+}
+
+.napomena p {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--tekst-slab);
+}
+
+.napomena strong {
+    color: var(--tekst);
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   NIVO-ZAVISNI BLOKOVI (Dodatna pitanja)
+   ══════════════════════════════════════════ */
+.skriveno { display: none !important; }
+
+/* Poruka dok nivo angažovanja nije izabran */
+.nivo-prazno {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.92rem;
+    color: var(--tekst-slabi);
+    line-height: 1.55;
+    margin: 4px 0 8px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px dashed var(--ivica-jak);
+    border-radius: var(--r-mali);
+}
+
+.nivo-prazno::before {
+    content: '↑';
+    flex-shrink: 0;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--plava-ivica);
+    line-height: 1.45;
+}
+
+/* Suptilno otkrivanje bloka kad se izabere nivo / neformalni vođa */
+@keyframes nivo-reveal {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.nivo-blok:not(.skriveno),
+.vodja-blok:not(.skriveno) {
+    animation: nivo-reveal 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Pitanje-grananje: postoji li neformalni vođa */
+.vodja-grananje {
+    margin: 8px 0 4px;
+    padding: 16px 18px;
+    background: var(--plava-sv);
+    border: 1px solid var(--ivica);
+    border-left: 3px solid var(--plava);
+    border-radius: 0 var(--r-mali) var(--r-mali) 0;
+}
+
+.vodja-grananje .pitanje-tekst {
+    margin-bottom: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nivo-blok:not(.skriveno),
+    .vodja-blok:not(.skriveno) {
+        animation: none;
+    }
 }
 
 /* ── Podnaslov dimenzije unutar sekcije ── */
@@ -1209,6 +1309,14 @@ form {
         font-size: 0.88rem;
         padding: 11px 14px 11px 15px;
         margin-bottom: 20px;
+        line-height: 1.55;
+    }
+    .napomena {
+        padding: 16px 18px;
+        margin-bottom: 26px;
+    }
+    .napomena p {
+        font-size: 0.9rem;
         line-height: 1.55;
     }
 

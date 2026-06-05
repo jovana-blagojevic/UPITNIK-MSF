@@ -38,6 +38,74 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 });
 
 /* ══════════════════════════════════════════
+   NIVO-ZAVISNA PITANJA (Dodatna pitanja)
+   Prikazuje blok pitanja prema izabranom nivou
+   angažovanja; za rekreativce otkriva pitanja o
+   neformalnom vođi tek ako on/ona postoji.
+   ══════════════════════════════════════════ */
+(function() {
+    /* Nivo-zavisni blokovi su sada raspoređeni preko više sekcija
+       (Fizička dobrobit, Odnos sa liderom, Negativni faktori), pa se
+       traže na nivou celog dokumenta. */
+    const blokovi    = document.querySelectorAll('.nivo-blok');
+    if (!blokovi.length) return;
+
+    const praznoBlokovi = document.querySelectorAll('.nivo-prazno');
+    const vodjaBlokovi  = document.querySelectorAll('.vodja-blok');
+
+    /* Poništava odgovore u bloku koji se sakriva da se ne bi poslali */
+    function resetBlok(blok) {
+        if (!blok) return;
+        blok.querySelectorAll('input[type="radio"]').forEach(function(r) { r.checked = false; });
+        blok.querySelectorAll('.ima-izbor').forEach(function(el) { el.classList.remove('ima-izbor'); });
+        blok.querySelectorAll('.neizabrana').forEach(function(el) { el.classList.remove('neizabrana'); });
+        blok.querySelectorAll('.greska').forEach(function(el) { el.classList.remove('greska'); });
+        blok.querySelectorAll('.greska-tekst').forEach(function(el) { el.remove(); });
+    }
+
+    function sakrij(blok) {
+        if (!blok || blok.classList.contains('skriveno')) return;
+        blok.classList.add('skriveno');
+        resetBlok(blok);
+    }
+
+    function prikaziVodju(prikazi) {
+        vodjaBlokovi.forEach(function(vodjaBlok) {
+            if (prikazi) vodjaBlok.classList.remove('skriveno');
+            else         sakrij(vodjaBlok);
+        });
+    }
+
+    document.querySelectorAll('input[name="nivo"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (!this.checked) return;
+            const izabran = this.value;
+            praznoBlokovi.forEach(function(prazno) { prazno.classList.add('skriveno'); });
+            blokovi.forEach(function(blok) {
+                if (blok.getAttribute('data-nivo') === izabran) blok.classList.remove('skriveno');
+                else sakrij(blok);
+            });
+            /* Pri promeni na nešto što nije rekreativac, poništi grananje o vođi */
+            if (izabran !== 'rekreativac') {
+                document.querySelectorAll('input[name="r_ima_vodju"]').forEach(function(r) { r.checked = false; });
+                prikaziVodju(false);
+            }
+        });
+    });
+
+    document.querySelectorAll('input[name="r_ima_vodju"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (!this.checked) return;
+            prikaziVodju(this.value === 'da');
+        });
+    });
+
+    /* Početno stanje — npr. ako pregledač vrati prethodno izabran nivo */
+    const vecIzabran = document.querySelector('input[name="nivo"]:checked');
+    if (vecIzabran) vecIzabran.dispatchEvent(new Event('change', { bubbles: true }));
+})();
+
+/* ══════════════════════════════════════════
    CANVAS POTPIS
    ══════════════════════════════════════════ */
 (function() {
@@ -186,6 +254,8 @@ forma.addEventListener('submit', (e) => {
     radioGrupe.forEach(ime => {
         const prviRadio = forma.querySelector(`input[name="${ime}"]`);
         const pitanje = getPitanjeWrapper(prviRadio);
+        /* Preskoči skrivena pitanja (nivo-zavisni blokovi) */
+        if (!pitanje || pitanje.offsetParent === null) return;
         const izabrano = forma.querySelector(`input[name="${ime}"]:checked`);
         if (!izabrano) {
             prikaziGresku(pitanje, 'Ovo polje je obavezno.');
@@ -196,6 +266,7 @@ forma.addEventListener('submit', (e) => {
     /* ── Validacija number inputa ── */
     forma.querySelectorAll('input[type="number"]').forEach(input => {
         const pitanje = getPitanjeWrapper(input);
+        if (pitanje && pitanje.offsetParent === null) return;
         if (!input.value || input.value < input.min || input.value > input.max) {
             prikaziGresku(pitanje, `Unesite broj između ${input.min} i ${input.max}.`);
             imaGreski = true;
