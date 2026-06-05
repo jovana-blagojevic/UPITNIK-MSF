@@ -8,9 +8,9 @@ Istraživanje ispituje kako učešće u grupnim muzičkim, sportskim i folklorni
 
 ## Korišćenje
 
-Nema build-a ni zavisnosti. Otvorite `intro.html` u pretraživaču.
+Nema build-a ni zavisnosti. Otvorite `index.html` u pretraživaču.
 
-Učesnici biraju vrstu aktivnosti na intro stranici i bivaju preusmereni na odgovarajući upitnik.
+Tok je u tri koraka: učesnik prvo bira **vrstu aktivnosti** (`index.html`), zatim **nivo angažovanja** — amater / rekreativac / profesionalac (`nivo-{grupa}.html`), pa se otvara odgovarajući upitnik već pripremljen za izabrani nivo (`index-{grupa}.html?nivo=…`).
 
 ---
 
@@ -18,7 +18,10 @@ Učesnici biraju vrstu aktivnosti na intro stranici i bivaju preusmereni na odgo
 
 | Fajl | Sadržaj |
 |---|---|
-| `intro.html` | Početna stranica — izbor grupe (muzika / sport / folklor) |
+| `index.html` | Početna stranica — izbor grupe (muzika / sport / folklor) |
+| `nivo-muzika.html` | Izbor nivoa angažovanja — muzika |
+| `nivo-sport.html` | Izbor nivoa angažovanja — sport |
+| `nivo-folklor.html` | Izbor nivoa angažovanja — folklor |
 | `index-muzika.html` | Upitnik za učesnike muzičkih aktivnosti |
 | `index-sport.html` | Upitnik za sportiste |
 | `index-folklor.html` | Upitnik za folkloraše |
@@ -29,7 +32,7 @@ Učesnici biraju vrstu aktivnosti na intro stranici i bivaju preusmereni na odgo
 
 Svaki upitnik sadrži:
 
-1. **Demografska pitanja** — pol, godine, vrsta aktivnosti, nivo angažovanja (amater / rekreativac / profesionalac), trajanje učešća, prethodna aktivnost
+1. **Demografska pitanja** — pol, godine, vrsta aktivnosti, trajanje učešća, prethodna aktivnost (nivo angažovanja se bira u prethodnom koraku, na `nivo-{grupa}.html`)
 2. **MHC-SF** — Mental Health Continuum Short Form (14 stavki, skala 0–5)
 3. **SPS-10** — Social Provision Scale (10 stavki, skala 1–4)
 4. **WHO-5** — Well-Being Index (5 stavki, skala 0–5)
