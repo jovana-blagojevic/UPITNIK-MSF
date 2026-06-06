@@ -410,6 +410,85 @@ form {
 }
 
 /* ══════════════════════════════════════════
+   PRETHODNE AKTIVNOSTI — više unosa („Dodaj još")
+   ══════════════════════════════════════════ */
+.prethodna-lista {
+    display: flex;
+    flex-direction: column;
+}
+
+.prethodna-stavka {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Svaki dodati set se vizuelno odvaja od prethodnog */
+.prethodna-stavka + .prethodna-stavka {
+    margin-top: 18px;
+    padding-top: 18px;
+    padding-left: 14px;
+    border-top: 1px dashed var(--ivica-jak);
+    border-left: 2px solid var(--plava-sv);
+}
+
+/* „Dodaj još" — diskretno, isprekidano dugme u plavom duhu */
+.dodaj-jos {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--plava);
+    background: none;
+    border: 1px dashed var(--plava-ivica);
+    border-radius: var(--r-mali);
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.dodaj-jos svg { flex-shrink: 0; }
+
+.dodaj-jos:hover {
+    background: var(--plava-sv);
+    border-color: var(--plava);
+}
+
+.dodaj-jos:focus-visible {
+    outline: 2px solid var(--plava);
+    outline-offset: 2px;
+}
+
+/* „Ukloni" — desno poravnato dugme unutar dodate stavke */
+.ukloni-stavka {
+    align-self: flex-end;
+    margin-top: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--tekst-slabi);
+    background: none;
+    border: none;
+    padding: 4px 2px;
+    cursor: pointer;
+    transition: color 0.12s;
+}
+
+.ukloni-stavka:hover { color: var(--greska); }
+
+.ukloni-stavka:focus-visible {
+    outline: 2px solid var(--plava);
+    outline-offset: 2px;
+}
+
+/* ══════════════════════════════════════════
    SUBMIT
    ══════════════════════════════════════════ */
 

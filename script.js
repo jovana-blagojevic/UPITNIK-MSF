@@ -89,6 +89,68 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 })();
 
 /* ══════════════════════════════════════════
+   DODAJ JOŠ — više prethodnih aktivnosti
+   Dugme „.dodaj-jos" klonira prvu „.prethodna-stavka" u
+   svojoj listi, čisti vrednosti i dodaje sufiks na name/id
+   (_2, _3…) tako da je svaki set nezavisna radio grupa i
+   zauzme posebne kolone u rezultatima. Radi za sva tri
+   upitnika; opcioni prazni setovi se ne validiraju.
+   ══════════════════════════════════════════ */
+(function() {
+    document.querySelectorAll('.dodaj-jos').forEach(function(dugme) {
+        const pitanje = dugme.closest('.pitanje');
+        const lista = pitanje && pitanje.querySelector('.prethodna-lista');
+        if (!lista) return;
+
+        const naslov = pitanje.querySelector('.pitanje-tekst');
+        let brojac = 1;   /* prva stavka koristi osnovna imena (bez sufiksa) */
+
+        dugme.addEventListener('click', function() {
+            brojac += 1;
+            const osnovna = lista.querySelector('.prethodna-stavka');
+            if (!osnovna) return;
+            const nova = osnovna.cloneNode(true);
+
+            /* Jedinstvena imena/ID-jevi + čišćenje vrednosti */
+            nova.querySelectorAll('input').forEach(function(inp) {
+                if (inp.name) inp.name = inp.name + '_' + brojac;
+                if (inp.id)   inp.id   = inp.id + '_' + brojac;
+                if (inp.type === 'radio') inp.checked = false;
+                else inp.value = '';
+            });
+
+            /* Ukloni zaostala vizuelna stanja iz klona */
+            ['ima-izbor', 'neizabrana', 'greska'].forEach(function(kl) {
+                nova.querySelectorAll('.' + kl).forEach(function(el) { el.classList.remove(kl); });
+            });
+            nova.querySelectorAll('.greska-tekst').forEach(function(el) { el.remove(); });
+
+            /* Pristupačnost: poveži kloniranu radio grupu sa naslovom pitanja */
+            const red = nova.querySelector('.opcije-red');
+            if (red) {
+                red.setAttribute('role', 'radiogroup');
+                if (naslov) {
+                    if (!naslov.id) naslov.id = 'prethodna-naslov-' + Math.random().toString(36).slice(2, 8);
+                    red.setAttribute('aria-labelledby', naslov.id);
+                }
+            }
+
+            /* Dugme za uklanjanje dodate stavke */
+            const ukloni = document.createElement('button');
+            ukloni.type = 'button';
+            ukloni.className = 'ukloni-stavka';
+            ukloni.textContent = 'Ukloni';
+            ukloni.addEventListener('click', function() { nova.remove(); });
+            nova.appendChild(ukloni);
+
+            lista.appendChild(nova);
+            const prviUnos = nova.querySelector('input');
+            if (prviUnos) prviUnos.focus();
+        });
+    });
+})();
+
+/* ══════════════════════════════════════════
    NIVO ANGAŽOVANJA (iz URL-a)
    Nivo se bira na zasebnom ekranu (nivo-*.html) i
    prosleđuje preko ?nivo=. Ovde se upisuje u skriveno

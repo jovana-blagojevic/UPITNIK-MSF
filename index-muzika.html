@@ -81,14 +81,6 @@
                     </div>
                 </div>
 
-                <!-- Dodatna muzička aktivnost -->
-                <div class="pitanje">
-                    <label class="pitanje-tekst">Ukoliko postoji dodatna muzička aktivnost koju pohađate simultano, molimo Vas da navedete</label>
-                    <div class="unos-wrapper">
-                        <input type="text" id="dodatna_aktivnost" name="dodatna_aktivnost" placeholder="npr. rok bend" class="unos-linija">
-                    </div>
-                </div>
-
                 <!-- Dužina učešća -->
                 <div class="pitanje">
                     <label class="pitanje-tekst" for="duzina">Koliko godina učestvujete u ovoj grupi?</label>
@@ -98,21 +90,37 @@
                     </div>
                 </div>
 
-                <!-- Prethodna grupna muzička aktivnost (opciono) -->
+                <!-- Dodatna muzička aktivnost -->
+                <div class="pitanje">
+                    <label class="pitanje-tekst">Ukoliko postoji dodatna muzička aktivnost koju pohađate simultano, molimo Vas da navedete</label>
+                    <div class="unos-wrapper">
+                        <input type="text" id="dodatna_aktivnost" name="dodatna_aktivnost" placeholder="npr. rok bend" class="unos-linija">
+                    </div>
+                </div>
+
+                <!-- Prethodna grupna muzička aktivnost (opciono, više unosa) -->
                 <div class="pitanje opciono">
                     <label class="pitanje-tekst">Ukoliko ste pre ove grupne muzičke aktivnosti pohađali neku drugu, molimo Vas da navedete koju i koliko dugo</label>
-                    <div class="unos-wrapper">
-                        <input type="text" id="prethodna_aktivnost" name="prethodna_aktivnost" placeholder="npr. hor, orkestar…" class="unos-linija">
+                    <div class="prethodna-lista">
+                        <div class="prethodna-stavka">
+                            <div class="unos-wrapper">
+                                <input type="text" id="prethodna_aktivnost" name="prethodna_aktivnost" placeholder="npr. hor, orkestar…" class="unos-linija">
+                            </div>
+                            <div class="opcije-red razmak-gore">
+                                <label class="opcija"><input type="radio" name="prethodna_nivo" value="amater"><span>Amater</span></label>
+                                <label class="opcija"><input type="radio" name="prethodna_nivo" value="rekreativac"><span>Rekreativac</span></label>
+                                <label class="opcija"><input type="radio" name="prethodna_nivo" value="profesionalac"><span>Profesionalac</span></label>
+                            </div>
+                            <div class="unos-wrapper razmak-gore">
+                                <input type="number" id="prethodna_trajanje" name="prethodna_trajanje" min="0" max="60" placeholder="npr. 3" class="unos-broj">
+                                <span class="unos-suffix">god.</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="opcije-red razmak-gore">
-                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="amater"><span>Amater</span></label>
-                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="rekreativac"><span>Rekreativac</span></label>
-                        <label class="opcija"><input type="radio" name="prethodna_nivo" value="profesionalac"><span>Profesionalac</span></label>
-                    </div>
-                    <div class="unos-wrapper razmak-gore">
-                        <input type="number" id="prethodna_trajanje" name="prethodna_trajanje" min="0" max="60" placeholder="npr. 3" class="unos-broj">
-                        <span class="unos-suffix">god.</span>
-                    </div>
+                    <button type="button" class="dodaj-jos">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Dodaj još aktivnost
+                    </button>
                 </div>
 
             </section>
@@ -152,7 +160,7 @@
             </section>
 
             <section class="sekcija" id="fizicka-dobrobit">
-                <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
+                <p class="skala-uputstvo">Sledeće tvrdnje odnose se na to kako učešće u grupi utiče na Vaše fizičko zdravlje i kondiciju. Označite u kojoj meri se slažete sa svakom. Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>
 
@@ -309,7 +317,7 @@
             </section>
 
             <section class="sekcija" id="odnos-sa-liderom">
-                <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
+                <p class="skala-uputstvo">Sledeće tvrdnje odnose se na Vaš odnos sa osobom koja vodi grupu. Označite u kojoj meri se slažete sa svakom. Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>
 
@@ -417,7 +425,7 @@
             </section>
 
             <section class="sekcija" id="negativni-faktori">
-                <p class="skala-uputstvo">Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
+                <p class="skala-uputstvo">Sledeće tvrdnje odnose se na moguće negativne aspekte učešća u grupi. Označite u kojoj meri se slažete sa svakom. Skala: 1 = Uopšte se ne slažem; 5 = U potpunosti se slažem.</p>
 
                 <p class="nivo-prazno">Izaberite <strong>nivo angažovanja</strong> u prvoj sekciji da bi se prikazala odgovarajuća pitanja.</p>
 
