@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Anonimni naučni upitnik o grupnim muzičkim, sportskim i folklornim aktivnostima i blagostanju — Pedagoški fakultet u Somboru i Akademija umetnosti UNS.">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#4D4B47">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <title>Upitnik — Muzičke aktivnosti</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +26,10 @@
         <form id="forma">
             <input type="hidden" name="tip_upitnika" value="muzika">
             <input type="hidden" name="nivo" id="nivo-polje">
+            <!-- Honeypot: skriveno polje protiv botova; pravi korisnici ga ne popunjavaju -->
+            <div class="hp-polje" aria-hidden="true">
+                <label>Ne popunjavajte ovo polje<input type="text" name="hp_polje" tabindex="-1" autocomplete="off"></label>
+            </div>
 
             <!-- ═══════════════════════════════
                  SEKCIJA 1: DEMOGRAFSKI PODACI
@@ -90,18 +98,18 @@
                     </div>
                 </div>
 
-                <!-- Prethodna grupna muzička aktivnost -->
-                <div class="pitanje">
+                <!-- Prethodna grupna muzička aktivnost (opciono) -->
+                <div class="pitanje opciono">
                     <label class="pitanje-tekst">Ukoliko ste pre ove grupne muzičke aktivnosti pohađali neku drugu, molimo Vas da navedete koju i koliko dugo</label>
                     <div class="unos-wrapper">
                         <input type="text" id="prethodna_aktivnost" name="prethodna_aktivnost" placeholder="npr. hor, orkestar…" class="unos-linija">
                     </div>
-                    <div class="opcije-red" style="margin-top: 10px;">
+                    <div class="opcije-red razmak-gore">
                         <label class="opcija"><input type="radio" name="prethodna_nivo" value="amater"><span>Amater</span></label>
                         <label class="opcija"><input type="radio" name="prethodna_nivo" value="rekreativac"><span>Rekreativac</span></label>
                         <label class="opcija"><input type="radio" name="prethodna_nivo" value="profesionalac"><span>Profesionalac</span></label>
                     </div>
-                    <div class="unos-wrapper" style="margin-top: 10px;">
+                    <div class="unos-wrapper razmak-gore">
                         <input type="number" id="prethodna_trajanje" name="prethodna_trajanje" min="0" max="60" placeholder="npr. 3" class="unos-broj">
                         <span class="unos-suffix">god.</span>
                     </div>
@@ -487,12 +495,12 @@
             <div class="pitanje saglasnost-blok">
                 <label class="pitanje-tekst" for="saglasnost">Potvrda dobrovoljne saglasnosti</label>
                 <p class="saglasnost-tekst">
-                    Potvrđujem da sam dobrovoljno i anonimno učestvovao/la u ovom istraživanju, da sam upoznat/a sa njegovom svrhom i da sam saglasan/na sa upotrebom prikupljenih podataka isključivo u naučne svrhe. Kao potvrdu, molimo Vas da unesete kombinaciju slova ili simbol po sopstvenom izboru (npr. "AB", "★", "XY").
+                    Potvrđujem da sam dobrovoljno i anonimno učestvovao/la u ovom istraživanju, da sam upoznat/a sa njegovom svrhom i da sam saglasan/na sa upotrebom prikupljenih podataka isključivo u naučne svrhe. Kao potvrdu, molimo Vas da u polju ispod nacrtate znak ili svoje inicijale prstom ili mišem.
                 </p>
                 <div class="potpis-wrapper">
                     <canvas id="saglasnost-canvas" class="potpis-canvas prazno" width="640" height="240"></canvas>
                     <div class="potpis-akcije">
-                        <span class="potpis-hint">Potpišite se prstom ili mišem</span>
+                        <span class="potpis-hint">Nacrtajte znak ili inicijale prstom ili mišem</span>
                         <button type="button" class="potpis-obrisi" onclick="potpis_obrisi('saglasnost-canvas')">Obriši</button>
                     </div>
                 </div>

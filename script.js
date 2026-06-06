@@ -38,6 +38,57 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 });
 
 /* ══════════════════════════════════════════
+   PRISTUPAČNOST — semantičko grupisanje radio polja
+   role=radiogroup + aria-labelledby povezuje tekst pitanja
+   sa opcijama, a Likert dugmićima daje smisleno ime
+   (npr. „3 — Više od polovine"). Radi za sve upitnike bez
+   ručnog menjanja svake stavke.
+   ══════════════════════════════════════════ */
+(function() {
+    let brojac = 0;
+    function obezbediId(el) {
+        if (!el.id) el.id = 'a11y-' + (++brojac);
+        return el.id;
+    }
+
+    /* Standardne pill grupe: .opcije-red ↔ .pitanje-tekst */
+    document.querySelectorAll('.opcije-red').forEach(function(grupa) {
+        grupa.setAttribute('role', 'radiogroup');
+        const pitanje = grupa.closest('.pitanje');
+        const naslov = pitanje && pitanje.querySelector('.pitanje-tekst');
+        if (naslov) grupa.setAttribute('aria-labelledby', obezbediId(naslov));
+    });
+
+    /* Likert redovi: .likert-opcije ↔ .likert-stavka */
+    document.querySelectorAll('.likert-red').forEach(function(red) {
+        const grupa = red.querySelector('.likert-opcije');
+        if (!grupa) return;
+        grupa.setAttribute('role', 'radiogroup');
+        const stavka = red.querySelector('.likert-stavka');
+        if (stavka) grupa.setAttribute('aria-labelledby', obezbediId(stavka));
+    });
+
+    /* Obogati Likert opcije imenom kolone iz zaglavlja bloka */
+    document.querySelectorAll('.likert-blok').forEach(function(blok) {
+        const kolone = blok.querySelectorAll('.likert-zaglavlje .likert-brojevi span');
+        const opisi = Array.prototype.map.call(kolone, function(s) {
+            const b = s.querySelector('b');
+            const sm = s.querySelector('small');
+            const broj = b ? b.textContent.trim() : '';
+            const tekst = sm ? sm.textContent.trim() : '';
+            return tekst ? (broj + ' — ' + tekst) : broj;
+        });
+        if (!opisi.length) return;
+        blok.querySelectorAll('.likert-red .likert-opcije').forEach(function(grupa) {
+            grupa.querySelectorAll('.likert-opcija').forEach(function(op, i) {
+                const inp = op.querySelector('input[type="radio"]');
+                if (inp && opisi[i]) inp.setAttribute('aria-label', opisi[i]);
+            });
+        });
+    });
+})();
+
+/* ══════════════════════════════════════════
    NIVO ANGAŽOVANJA (iz URL-a)
    Nivo se bira na zasebnom ekranu (nivo-*.html) i
    prosleđuje preko ?nivo=. Ovde se upisuje u skriveno
@@ -248,6 +299,10 @@ forma.addEventListener('input', (e) => {
 forma.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    /* ── Honeypot: ako je skriveno polje popunjeno — verovatno bot, ne šalji ── */
+    const hp = forma.querySelector('input[name="hp_polje"]');
+    if (hp && hp.value.trim() !== '') return;
+
     let imaGreski = false;
 
     /* ── Validacija svih radio grupa ── */
@@ -258,8 +313,9 @@ forma.addEventListener('submit', (e) => {
     radioGrupe.forEach(ime => {
         const prviRadio = forma.querySelector(`input[name="${ime}"]`);
         const pitanje = getPitanjeWrapper(prviRadio);
-        /* Preskoči skrivena pitanja (nivo-zavisni blokovi) */
+        /* Preskoči skrivena (nivo-zavisni blokovi) i opciona pitanja */
         if (!pitanje || pitanje.offsetParent === null) return;
+        if (prviRadio.closest('.opciono')) return;
         const izabrano = forma.querySelector(`input[name="${ime}"]:checked`);
         if (!izabrano) {
             prikaziGresku(pitanje, 'Ovo polje je obavezno.');
@@ -267,11 +323,19 @@ forma.addEventListener('submit', (e) => {
         }
     });
 
-    /* ── Validacija number inputa ── */
+    /* ── Validacija number inputa (numeričko poređenje, ne string) ── */
     forma.querySelectorAll('input[type="number"]').forEach(input => {
         const pitanje = getPitanjeWrapper(input);
-        if (pitanje && pitanje.offsetParent === null) return;
-        if (!input.value || input.value < input.min || input.value > input.max) {
+        if (pitanje && pitanje.offsetParent === null) return;   /* skriveno */
+
+        const opciono = !!input.closest('.opciono');
+        const prazno = !input.value.trim();
+        if (opciono && prazno) return;                          /* opciono i prazno — u redu */
+
+        const broj = Number(input.value);
+        const min = input.min !== '' ? Number(input.min) : -Infinity;
+        const max = input.max !== '' ? Number(input.max) :  Infinity;
+        if (prazno || Number.isNaN(broj) || broj < min || broj > max) {
             prikaziGresku(pitanje, `Unesite broj između ${input.min} i ${input.max}.`);
             imaGreski = true;
         }
@@ -283,19 +347,10 @@ forma.addEventListener('submit', (e) => {
         const hidden = forma.querySelector('#saglasnost');
         const pitanje = getPitanjeWrapper(canvasPotpis) || canvasPotpis.closest('.pitanje') || canvasPotpis.closest('.saglasnost-blok');
         if (!hidden || !hidden.value) {
-            if (pitanje) prikaziGresku(pitanje, 'Molimo Vas da se potpišete.');
+            if (pitanje) prikaziGresku(pitanje, 'Molimo Vas da nacrtate znak saglasnosti.');
             canvasPotpis.style.borderColor = 'var(--greska)';
             imaGreski = true;
         }
-    } else {
-        /* ── Validacija text inputa (fallback) ── */
-        forma.querySelectorAll('input[type="text"], textarea').forEach(input => {
-            const pitanje = getPitanjeWrapper(input);
-            if (!input.value.trim()) {
-                prikaziGresku(pitanje, 'Ovo polje je obavezno.');
-                imaGreski = true;
-            }
-        });
     }
 
     if (imaGreski) {
@@ -313,12 +368,25 @@ forma.addEventListener('submit', (e) => {
     podaci.token = window.UPITNIK_TOKEN;
 
     const dugme = forma.querySelector('[type="submit"]');
+
+    /* Bez konfiguracije nema slanja (config.js nije učitan / URL nije postavljen) */
+    if (!window.UPITNIK_URL) {
+        alert('Slanje trenutno nije moguće (nedostaje konfiguracija). Molimo obavestite organizatore.');
+        return;
+    }
+
+    const dugmeHTML = dugme.innerHTML;
     dugme.disabled = true;
     dugme.textContent = 'Šalje se…';
 
+    /* Prekid ako mreža predugo ne odgovara (15 s) */
+    const kontroler = new AbortController();
+    const istek = setTimeout(function() { kontroler.abort(); }, 15000);
+
     fetch(window.UPITNIK_URL, {
         method: 'POST',
-        body: JSON.stringify(podaci)
+        body: JSON.stringify(podaci),
+        signal: kontroler.signal
     })
     .then(function(res) { return res.json(); })
     .then(function(odgovor) {
@@ -336,7 +404,8 @@ forma.addEventListener('submit', (e) => {
     })
     .catch(function() {
         dugme.disabled = false;
-        dugme.textContent = 'Pošalji';
+        dugme.innerHTML = dugmeHTML;
         alert('Došlo je do greške pri slanju. Molimo pokušajte ponovo.');
-    });
+    })
+    .finally(function() { clearTimeout(istek); });
 });

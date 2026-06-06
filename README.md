@@ -49,8 +49,8 @@ Sva pitanja su obavezna osim polja za dodatnu/prethodnu aktivnost.
 ### Kloniranje repozitorijuma
 
 ```bash
-git clone <URL repozitorijuma>
-cd "CLAUDE UPITNIK"
+git clone git@github.com:jovana-blagojevic/UPITNIK-MSF.git
+cd UPITNIK-MSF
 ```
 
 ### Tipičan tok rada
@@ -77,7 +77,54 @@ git push
 | `git restore <fajl>` | Povratak na poslednju komitovanu verziju fajla |
 | `git pull` | Preuzimanje najnovije verzije sa remote-a |
 
-> **Napomena:** Projekat nema build korak — fajlovi se direktno otvaraju u pretraživaču. Nema `node_modules` ni generisanih fajlova koje treba isključiti iz gita (`.gitignore` nije neophodan, ali možete dodati `.DS_Store` unos).
+> **Napomena:** Projekat nema build korak — fajlovi se direktno otvaraju u pretraživaču. `.gitignore` već isključuje `config.js` (tajna konfiguracija) i `.DS_Store` — vodite računa da `config.js` nikada ne ode u Git.
+
+---
+
+## Bezbednost
+
+Aplikacija je statična i učitava se u pretraživaču, pa su **`UPITNIK_URL` i
+`UPITNIK_TOKEN` vidljivi svakome** (View Source / Network). Token **nije tajna**
+i ne sprečava zloupotrebu — pravu zaštitu mora da radi Apps Script na serverskoj
+strani. Klijent dodatno ima *honeypot* polje (`hp_polje`): skriveno je za ljude,
+ali ga automatski botovi popune; ako je popunjeno, slanje se ne izvršava.
+
+Preporučena `doPost` provera u Apps Script-u:
+
+```javascript
+function doPost(e) {
+  var TOKEN = 'ISTI_TOKEN_KAO_U_CONFIG';
+  try {
+    var p = JSON.parse(e.postData.contents);
+
+    if (p.token !== TOKEN) return _json({status: 'error', greska: 'token'});
+
+    // Honeypot: ako je popunjen — bot. Tiho prihvati, ali NE upisuj.
+    if (p.hp_polje && String(p.hp_polje).trim() !== '') return _json({status: 'ok'});
+
+    // Osnovna validacija opsega (primer)
+    var god = Number(p.godine);
+    if (!(god >= 18 && god <= 80)) return _json({status: 'error', greska: 'godine'});
+
+    // (opciono) rate-limit preko CacheService/PropertiesService po vremenu
+
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Odgovori');
+    sh.appendRow([new Date(), p.tip_upitnika, p.nivo, p.pol, p.godine /* … */]);
+    return _json({status: 'ok'});
+  } catch (err) {
+    return _json({status: 'error', greska: String(err)});
+  }
+}
+
+function _json(o) {
+  return ContentService.createTextOutput(JSON.stringify(o))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+> Napomena: `localStorage` blokada ponovnog popunjavanja sprečava slučajno
+> dvostruko slanje, ali se trivijalno zaobilazi (incognito / brisanje podataka).
+> Za strože sprečavanje duplikata potrebna je serverska logika.
 
 ---
 
