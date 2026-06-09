@@ -171,7 +171,7 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
     /* Bez ispravnog nivoa — vrati korisnika na izbor nivoa za ovu grupu */
     if (VALIDNI.indexOf(nivo) === -1) {
         const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
-        location.replace(tip ? 'nivo-' + tip + '.html' : 'index.html');
+        location.replace(tip ? 'nivo-' + tip + '.html' : '../index.html');
         return;
     }
 

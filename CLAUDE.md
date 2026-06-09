@@ -12,23 +12,34 @@ Always invoke the `frontend-design` skill when making any UI, layout, or styling
 
 The participant flow is three steps: `index.html` (pick group) → `nivo-{grupa}.html` (pick engagement level) → `index-{grupa}.html?nivo={nivo}` (the questionnaire, pre-filtered to that level). The chosen level arrives in the questionnaire via the `?nivo=` query param; opening a questionnaire without a valid `?nivo=` redirects back to `nivo-{grupa}.html`.
 
-On submit (after client-side validation), the form POSTs the collected answers as JSON to a Google Apps Script endpoint read from `config.js` (`window.UPITNIK_URL` / `window.UPITNIK_TOKEN`; copy `config.example.js` → `config.js`, which is gitignored). On success it sets a `localStorage` flag (`upitnik_popunjen_{tip}`) to block re-submission and swaps the card for a `.hvala` thank-you message; on network/error it shows an `alert()`.
+On submit (after client-side validation), the form POSTs the collected answers as JSON to a Google Apps Script endpoint read from `assets/config.js` (`window.UPITNIK_URL` / `window.UPITNIK_TOKEN`). `assets/config.js` **is committed** — the site is deployed via GitHub Pages, which serves only files tracked in Git, and the token is not a real secret (it is visible client-side anyway). The real protection is server-side in `server/apps-script.gs` (token + honeypot + range validation + CSV/formula-injection sanitization). On success it sets a `localStorage` flag (`upitnik_popunjen_{tip}`) to block re-submission and swaps the card for a `.hvala` thank-you message; on network/error it shows an `alert()`.
 
 No build step. No package manager. No test runner. Open any `.html` file directly in a browser to develop.
 
 ## File structure
 
 ```
-index.html          — Landing page: participant selects their activity group
-nivo-muzika.html    — Music: pick engagement level → index-muzika.html?nivo=…
-nivo-sport.html     — Sport: pick engagement level → index-sport.html?nivo=…
-nivo-folklor.html   — Folklore: pick engagement level → index-folklor.html?nivo=…
-index-muzika.html   — Music questionnaire
-index-sport.html    — Sports questionnaire
-index-folklor.html  — Folklore questionnaire
-style.css           — All styles; single source of truth for the design system
-script.js           — Form behaviour: nivo from URL, "Drugo" input activation, canvas signature, validation
+index.html                — Landing page: pick activity group (stays at repo root — GitHub Pages entry point)
+strane/                   — All questionnaire pages
+  nivo-muzika.html        — Music: pick engagement level → index-muzika.html?nivo=…
+  nivo-sport.html         — Sport: pick engagement level → index-sport.html?nivo=…
+  nivo-folklor.html       — Folklore: pick engagement level → index-folklor.html?nivo=…
+  index-muzika.html       — Music questionnaire
+  index-sport.html        — Sports questionnaire
+  index-folklor.html      — Folklore questionnaire
+assets/                   — Static resources
+  style.css               — All styles; single source of truth for the design system
+  script.js               — Form behaviour: nivo from URL, "Drugo" input activation, canvas signature, validation
+  config.js               — window.UPITNIK_URL / UPITNIK_TOKEN (committed — served by GitHub Pages; token is not a real secret)
+  favicon.svg             — Site icon
+  fonts/                  — Self-hosted Lora + Source Sans 3 (woff2, latin + latin-ext); @font-face at the top of style.css
+  logos/                  — Institutional emblems shown in index.html header (white-treated on the dark header)
+server/                   — Google Apps Script (source of truth; NOT executed from Git — paste into the Apps Script editor)
+  apps-script.gs          — Receives POSTs, validates + sanitizes, writes to Google Sheets (tab per group)
+  apps-script-setup.gs    — One-time table preparation/styling
 ```
+
+Paths are relative: pages in `strane/` reference assets as `../assets/…` and link back to the landing page as `../index.html`; `index.html` at the root uses `assets/…` and `strane/…`.
 
 The three `nivo-*.html` pages share the landing-page shell (`.upitnik-header` + `.uvod-telo`) and present the three level options as clickable cards (`.nivo-izbor` / `.dugme-nivo`), each linking to the matching questionnaire with `?nivo=amater|rekreativac|profesionalac`.
 
@@ -41,11 +52,11 @@ Each questionnaire is structured as:
 2. `<form id="forma">` — cream panel inside the dark card
    - `<input type="hidden" name="nivo">` — engagement level, filled from `?nivo=` (the level is chosen on `nivo-{grupa}.html`, not inside the form)
    - `<section class="sekcija" id="demografija">` — activity-specific demographic questions
-   - Five `<section class="sekcija">` blocks, one per scale (MHC-SF, SPS-10, WHO-5, SWLS, FAS)
+   - Five `<section class="sekcija">` blocks, one per scale — MHC-SF, SPS-10, WHO-5, SWLS, FAS (this is the **folklor** order; muzika/sport arrange the scales differently — see below)
    - `.saglasnost-blok` — canvas signature consent block
    - `.podnozje-forme` — submit button
 
-The demographic section differs between questionnaires. The five shared scales are identical across all three. **Muzika** and **sport** additionally have level-dependent sections (Fizička dobrobit, Odnos sa liderom, Negativni faktori) built as `.nivo-blok` elements with `data-nivo="amater|rekreativac|profesionalac"`; only the block matching the chosen `nivo` is shown. **Folklor** records `nivo` but has no level-dependent sections.
+The demographic section differs between questionnaires. The five shared scales are identical across all three. **Muzika** and **sport** additionally have level-dependent sections (Fizička dobrobit, Odnos sa liderom, Negativni faktori) built as `.nivo-blok` elements with `data-nivo="amater|rekreativac|profesionalac"`; only the block matching the chosen `nivo` is shown. **Folklor** records `nivo` but has no level-dependent sections. Because of this, the section order differs per questionnaire: **folklor** is Demografija → MHC-SF → SPS-10 → WHO-5 → SWLS → FAS; **muzika/sport** are Demografija → WHO-5 → Fizička dobrobit → SWLS → MHC-SF → SPS-10 → Odnos sa liderom → FAS → Negativni faktori (the three level-dependent sections interleaved among the scales).
 
 ## Design system (style.css)
 
@@ -72,7 +83,11 @@ CSS custom properties are defined on `:root`. Key tokens:
 | `--r-sredi` | `5px` | Medium border radius |
 | `--senka` | layered box-shadow | Card and panel shadows |
 
+Both fonts are **self-hosted** (`@font-face` at the top of `style.css`, files in `assets/fonts/`) — no Google Fonts CDN request, for participant privacy. Weights loaded: Lora 400/500/600/700 + italic 400/500; Source Sans 3 300/400/500/600 + italic 300/400. Subset is latin + latin-ext (covers Serbian č/ć/ž/š/đ); to add a weight, drop the woff2 in `assets/fonts/` and add a matching `@font-face` block.
+
 The `.upitnik` card uses a hard-coded `background: #4D4B47` (dark charcoal), not a token. The `.likert-zaglavlje` also uses this dark background.
+
+`index.html` opens with `.header-logoi` inside the dark `.upitnik-header`: the two institutional emblems (`assets/logos/`) rendered as white silhouettes via `filter: brightness(0) invert(1)`, separated by a thin `.logo-podela` hairline. The circular Pedagoški seal and the triangular Akademija mark are size-balanced per-logo (`.logo-pef` / `.logo-au`) because a triangle reads optically smaller than a circle.
 
 **Radio option variants:**
 - `.opcije-red` / `.opcija` — standard pill-style radio rows (used in demographics)
@@ -106,5 +121,5 @@ Note: the `vrsta_sporta` and `vrsta_folklora_drugo` text inputs are **not valida
 
 - All text is Serbian, Latin script, sentence case.
 - Formal address throughout ("Vi", "Vas", "Vaš").
-- Sections have no visible title heading; each section opens directly with its `.skala-uputstvo` instruction. For every Likert scale that instruction ends with a `Skala: <min> = …; <max> = …` legend matching that scale's own endpoints (e.g. WHO-5 `0 = Nikad; 5 = Sve vreme`, SWLS `1 = … ; 7 = …`).
+- Sections have no visible title heading; each section opens directly with its `.skala-uputstvo` instruction. For every Likert scale that instruction ends with a `Skala: <min> = …; <max> = …` legend matching that scale's own endpoints (e.g. WHO-5 `1 = Nikad; 6 = Sve vreme`, SWLS `1 = … ; 7 = …`).
 - The `.badge` in each questionnaire header shows the full institutional affiliation.
