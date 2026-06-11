@@ -41,6 +41,14 @@ var IZUZMI = { token: true, hp_polje: true };
 var GODINE_MIN = 18;
 var GODINE_MAX = 80;
 
+/* Zaštita tabele od „flooding"-a kolona: upis je header-driven, pa bi inače
+   bilo ko mogao POST-om sa izmišljenim ključevima da pravi nove kolone bez
+   ograničenja. Najveći legitimni upitnik (muzika + „Dodaj još") ima daleko
+   ispod 200 polja; imena polja su uvek [a-z0-9_]. */
+var MAX_KLJUCEVA = 200;
+var KLJUC_OBLIK = /^[A-Za-z0-9_]{1,48}$/;
+var MAX_DUZINA_VREDNOSTI = 500;
+
 
 function doPost(e) {
   /* Lock serijalizuje upise: bez njega bi dva istovremena slanja mogla da
@@ -79,7 +87,18 @@ function doPost(e) {
       return _json({ status: 'error', greska: 'godine' });
     }
 
-    /* 4) Upis u tab odgovarajuće grupe (pravi ga ako ne postoji). */
+    /* 4) Oblik payload-a — broj i imena ključeva (vidi MAX_KLJUCEVA gore). */
+    var kljucevi = Object.keys(p);
+    if (kljucevi.length > MAX_KLJUCEVA) {
+      return _json({ status: 'error', greska: 'previse_polja' });
+    }
+    for (var i = 0; i < kljucevi.length; i++) {
+      if (!KLJUC_OBLIK.test(kljucevi[i])) {
+        return _json({ status: 'error', greska: 'nedozvoljeno_polje' });
+      }
+    }
+
+    /* 5) Upis u tab odgovarajuće grupe (pravi ga ako ne postoji). */
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sh = ss.getSheetByName(TABOVI[tip]) || ss.insertSheet(TABOVI[tip]);
     upisiRed(sh, p);
@@ -135,9 +154,11 @@ function upisiRed(sh, p) {
 
 /* Zaštita od CSV/Formula injection: vrednost koju Sheets može protumačiti kao
    formulu (počinje sa = + - @, ili vodeći tab/CR) tretiraj kao čist tekst —
-   dodaj vodeći apostrof. Brojevi i ostali tipovi prolaze nepromenjeni. */
+   dodaj vodeći apostrof. Brojevi i ostali tipovi prolaze nepromenjeni.
+   Stringovi se i skraćuju (legitimna polja su kratka; saglasnost stiže kao 'da'). */
 function bezbednaVrednost(v) {
   if (typeof v !== 'string') return v;
+  v = v.slice(0, MAX_DUZINA_VREDNOSTI);
   return /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
 }
 

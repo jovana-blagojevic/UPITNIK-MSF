@@ -1,28 +1,52 @@
 /* ══════════════════════════════════════════
    LOCAL STORAGE — blokiranje ponovnog popunjavanja
+   Jedan učesnik popunjava JEDAN upitnik ukupno, bez obzira
+   na grupu: globalni ključ 'upitnik_popunjen' + nasleđeni
+   ključevi po grupi (učesnici koji su poslali odgovore pre
+   uvođenja globalnog ključa ostaju blokirani). Skripta se
+   učitava i na uvodnim stranama (index, nivo-*), pa blokada
+   važi na celom sajtu. localStorage je u try/catch jer u
+   privatnom režimu pristup može da baci izuzetak.
    ══════════════════════════════════════════ */
-(function() {
-    const forma = document.getElementById('forma');
-    if (!forma) return;
-    const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
-    if (!tip) return;
-    if (localStorage.getItem('upitnik_popunjen_' + tip) === 'da') {
-        forma.closest('.upitnik').innerHTML =
-            '<div class="hvala">' +
-            '<p>Već ste popunili ovaj upitnik.</p>' +
-            '<p>Vaši odgovori su zabeleženi. Hvala Vam na učešću!</p>' +
-            '</div>';
+function upitnikPopunjen() {
+    try {
+        if (localStorage.getItem('upitnik_popunjen') === 'da') return true;
+        return ['muzika', 'sport', 'folklor'].some(function(tip) {
+            return localStorage.getItem('upitnik_popunjen_' + tip) === 'da';
+        });
+    } catch (e) {
+        return false;
     }
+}
+
+function zabeleziPopunjen(tip) {
+    try {
+        localStorage.setItem('upitnik_popunjen', 'da');
+        if (tip) localStorage.setItem('upitnik_popunjen_' + tip, 'da');
+    } catch (e) { /* privatni režim — slanje je prošlo, samo blokada ne važi */ }
+}
+
+(function() {
+    if (!upitnikPopunjen()) return;
+    const kartica = document.querySelector('.upitnik');
+    if (!kartica) return;
+    kartica.innerHTML =
+        '<div class="hvala">' +
+        '<p>Već ste popunili upitnik.</p>' +
+        '<p>Vaši odgovori su zabeleženi. Hvala Vam na učešću!</p>' +
+        '</div>';
 })();
 
 /* ══════════════════════════════════════════
    DRUGO — aktivacija tekst polja
    ══════════════════════════════════════════ */
 document.querySelectorAll('.opcija-drugo input[type="radio"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
+    radio.addEventListener('change', function(e) {
         if (this.checked) {
             var input = this.closest('.opcija-drugo').querySelector('.unos-drugo');
-            if (input) { input.removeAttribute('tabindex'); input.focus(); }
+            /* Fokus samo na pravi klik — programski change (vraćanje
+               radne verzije) ne sme da otme fokus i skroluje stranu */
+            if (input) { input.removeAttribute('tabindex'); if (e.isTrusted) input.focus(); }
         }
     });
 });
@@ -105,7 +129,7 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
         const naslov = pitanje.querySelector('.pitanje-tekst');
         let brojac = 1;   /* prva stavka koristi osnovna imena (bez sufiksa) */
 
-        dugme.addEventListener('click', function() {
+        dugme.addEventListener('click', function(e) {
             brojac += 1;
             const osnovna = lista.querySelector('.prethodna-stavka');
             if (!osnovna) return;
@@ -145,7 +169,8 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 
             lista.appendChild(nova);
             const prviUnos = nova.querySelector('input');
-            if (prviUnos) prviUnos.focus();
+            /* Fokus samo na pravi klik (vidi „Drugo" iznad) */
+            if (prviUnos && e.isTrusted) prviUnos.focus();
         });
     });
 })();
@@ -230,6 +255,7 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     let crta = false;
     let imaTracka = false;
 
@@ -278,7 +304,12 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
         ctx.closePath();
         canvas.classList.remove('aktivan');
         const hidden = document.getElementById('saglasnost');
-        if (hidden && imaTracka) hidden.value = canvas.toDataURL();
+        if (hidden && imaTracka) {
+            hidden.value = canvas.toDataURL();
+            /* Potpis ne emituje change — skini grešku validacije odmah */
+            ukloniGresku(canvas.closest('.saglasnost-blok'));
+            canvas.style.borderColor = '';
+        }
     }
 
     canvas.addEventListener('mousedown',  start);
@@ -300,6 +331,8 @@ function potpis_obrisi(canvasId) {
     if (hidden) hidden.value = '';
 }
 
+/* Na uvodnim stranama (index, nivo-*) i posle blokade forma ne postoji —
+   svi listeneri ispod se kače samo ako je ima. */
 const forma = document.getElementById('forma');
 
 /* ── Pronalazi wrapper pitanja (radi i za .pitanje i za .likert-red) ── */
@@ -308,6 +341,9 @@ function getPitanjeWrapper(el) {
 }
 
 function prikaziGresku(pitanje, poruka) {
+    /* Skidanje pa vraćanje klase restartuje shake animaciju i pri ponovnom submitu */
+    pitanje.classList.remove('greska');
+    void pitanje.offsetWidth;
     pitanje.classList.add('greska');
     let span = pitanje.querySelector('.greska-tekst');
     if (!span) {
@@ -326,7 +362,7 @@ function ukloniGresku(pitanje) {
 }
 
 /* ── Zasivljavanje opcija pri promeni ── */
-forma.addEventListener('change', (e) => {
+if (forma) forma.addEventListener('change', (e) => {
     const pitanje = getPitanjeWrapper(e.target);
     if (pitanje) ukloniGresku(pitanje);
 
@@ -353,19 +389,19 @@ forma.addEventListener('change', (e) => {
     }
 });
 
-forma.addEventListener('input', (e) => {
+if (forma) forma.addEventListener('input', (e) => {
     const pitanje = getPitanjeWrapper(e.target);
     if (pitanje) ukloniGresku(pitanje);
 });
 
-forma.addEventListener('submit', (e) => {
+if (forma) forma.addEventListener('submit', (e) => {
     e.preventDefault();
 
     /* ── Honeypot: ako je skriveno polje popunjeno — verovatno bot, ne šalji ── */
     const hp = forma.querySelector('input[name="hp_polje"]');
     if (hp && hp.value.trim() !== '') return;
 
-    let imaGreski = false;
+    let brojGresaka = 0;
 
     /* ── Validacija svih radio grupa ── */
     const radioGrupe = [...new Set(
@@ -381,7 +417,7 @@ forma.addEventListener('submit', (e) => {
         const izabrano = forma.querySelector(`input[name="${ime}"]:checked`);
         if (!izabrano) {
             prikaziGresku(pitanje, 'Ovo polje je obavezno.');
-            imaGreski = true;
+            brojGresaka += 1;
         }
     });
 
@@ -399,7 +435,7 @@ forma.addEventListener('submit', (e) => {
         const max = input.max !== '' ? Number(input.max) :  Infinity;
         if (prazno || Number.isNaN(broj) || broj < min || broj > max) {
             prikaziGresku(pitanje, `Unesite broj između ${input.min} i ${input.max}.`);
-            imaGreski = true;
+            brojGresaka += 1;
         }
     });
 
@@ -411,11 +447,12 @@ forma.addEventListener('submit', (e) => {
         if (!hidden || !hidden.value) {
             if (pitanje) prikaziGresku(pitanje, 'Molimo Vas da nacrtate znak saglasnosti.');
             canvasPotpis.style.borderColor = 'var(--greska)';
-            imaGreski = true;
+            brojGresaka += 1;
         }
     }
 
-    if (imaGreski) {
+    if (brojGresaka > 0) {
+        prikaziBrojacGresaka(brojGresaka);
         const prvaGreska = forma.querySelector('.greska');
         if (prvaGreska) prvaGreska.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
@@ -439,7 +476,7 @@ forma.addEventListener('submit', (e) => {
 
     const dugmeHTML = dugme.innerHTML;
     dugme.disabled = true;
-    dugme.textContent = 'Šalje se…';
+    dugme.innerHTML = '<span class="spinner" aria-hidden="true"></span><span>Šalje se…</span>';
 
     /* Prekid ako mreža predugo ne odgovara (15 s) */
     const kontroler = new AbortController();
@@ -453,8 +490,9 @@ forma.addEventListener('submit', (e) => {
     .then(function(res) { return res.json(); })
     .then(function(odgovor) {
         if (odgovor.status === 'ok') {
-            const tip = podaci.tip_upitnika;
-            if (tip) localStorage.setItem('upitnik_popunjen_' + tip, 'da');
+            zabeleziPopunjen(podaci.tip_upitnika);
+            upitnikPoslat = true;
+            obrisiRadnuVerziju();
             forma.closest('.upitnik').innerHTML =
                 '<div class="hvala">' +
                 '<p>Hvala na popunjenom upitniku!</p>' +
@@ -471,3 +509,241 @@ forma.addEventListener('submit', (e) => {
     })
     .finally(function() { clearTimeout(istek); });
 });
+
+/* ══════════════════════════════════════════
+   TRAKA NAPRETKA
+   Tanka fiksirana traka na vrhu ekrana: procenat
+   odgovorenih od vidljivih OBAVEZNIH pitanja (ista logika
+   preskakanja kao u validaciji — skrivena i .opciono se ne
+   računaju, pa promena nivoa/vođe sama prilagodi zbir).
+   ══════════════════════════════════════════ */
+(function() {
+    if (!forma) return;
+
+    const traka = document.createElement('div');
+    traka.className = 'napredak-traka';
+    traka.setAttribute('role', 'progressbar');
+    traka.setAttribute('aria-label', 'Napredak popunjavanja upitnika');
+    traka.setAttribute('aria-valuemin', '0');
+    traka.setAttribute('aria-valuemax', '100');
+    const puni = document.createElement('div');
+    puni.className = 'napredak-puni';
+    traka.appendChild(puni);
+    document.body.appendChild(traka);
+
+    function izracunaj() {
+        let ukupno = 0;
+        let odgovoreno = 0;
+
+        const radioGrupe = [...new Set(
+            [...forma.querySelectorAll('input[type="radio"]')].map(r => r.name)
+        )];
+        radioGrupe.forEach(function(ime) {
+            const prviRadio = forma.querySelector('input[name="' + ime + '"]');
+            const pitanje = getPitanjeWrapper(prviRadio);
+            if (!pitanje || pitanje.offsetParent === null) return;
+            if (prviRadio.closest('.opciono')) return;
+            ukupno += 1;
+            if (forma.querySelector('input[name="' + ime + '"]:checked')) odgovoreno += 1;
+        });
+
+        forma.querySelectorAll('input[type="number"]').forEach(function(input) {
+            const pitanje = getPitanjeWrapper(input);
+            if (pitanje && pitanje.offsetParent === null) return;
+            if (input.closest('.opciono')) return;
+            ukupno += 1;
+            if (input.value.trim() !== '') odgovoreno += 1;
+        });
+
+        const potpis = forma.querySelector('#saglasnost');
+        if (potpis) {
+            ukupno += 1;
+            if (potpis.value) odgovoreno += 1;
+        }
+
+        const procenat = ukupno ? Math.round(odgovoreno / ukupno * 100) : 0;
+        puni.style.width = procenat + '%';
+        traka.setAttribute('aria-valuenow', String(procenat));
+    }
+
+    forma.addEventListener('change', izracunaj);
+    forma.addEventListener('input', izracunaj);
+    /* Potpis i „Obriši" ne emituju change — preračunaj po otpuštanju prsta/miša */
+    document.addEventListener('pointerup', izracunaj);
+    document.addEventListener('touchend', izracunaj);
+    izracunaj();
+})();
+
+/* ══════════════════════════════════════════
+   ANIMACIJA SEKCIJA pri skrolovanju
+   Sekcije se blago pojave kad uđu u ekran (jednom).
+   Klasa anim-sekcije se dodaje tek kad observer postoji,
+   pa bez JS-a (ili uz prefers-reduced-motion) sve ostaje
+   normalno vidljivo. Krajnje stanje nema transform — sticky
+   likert zaglavlje nastavlja da radi.
+   ══════════════════════════════════════════ */
+(function() {
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const sekcije = document.querySelectorAll('.sekcija, .napomena, .saglasnost-blok');
+    if (!sekcije.length) return;
+
+    const posmatrac = new IntersectionObserver(function(unosi) {
+        unosi.forEach(function(unos) {
+            if (!unos.isIntersecting) return;
+            unos.target.classList.add('sekcija-vidljiva');
+            posmatrac.unobserve(unos.target);
+        });
+    }, { rootMargin: '0px 0px -8% 0px' });
+
+    document.body.classList.add('anim-sekcije');
+    sekcije.forEach(function(s) { posmatrac.observe(s); });
+})();
+
+/* ══════════════════════════════════════════
+   BROJAČ PREOSTALIH ODGOVORA
+   Posle neuspelog slanja, kraj dugmeta „Pošalji" stoji
+   koliko odgovora još nedostaje. Kako učesnik odgovara
+   (postojeći listeneri skidaju .greska), broj se smanjuje
+   i poruka nestaje na nuli. Pre prvog pokušaja slanja
+   poruka se ne prikazuje.
+   ══════════════════════════════════════════ */
+function porukaNedostaje(n) {
+    /* Srpski oblici: 1/21/31… odgovor; 2–4/22–24… odgovora (nedostaju);
+       ostalo odgovora (nedostaje); 11–14 uvek odgovora (nedostaje) */
+    const j = n % 10, d = n % 100;
+    if (j === 1 && d !== 11) return 'Nedostaje još ' + n + ' odgovor — pitanje je označeno crvenom bojom.';
+    if (j >= 2 && j <= 4 && (d < 12 || d > 14)) return 'Nedostaju još ' + n + ' odgovora — pitanja su označena crvenom bojom.';
+    return 'Nedostaje još ' + n + ' odgovora — pitanja su označena crvenom bojom.';
+}
+
+function prikaziBrojacGresaka(n) {
+    const podnozje = forma && forma.querySelector('.podnozje-forme');
+    if (!podnozje) return;
+    let poruka = podnozje.querySelector('.podnozje-greska');
+    if (!poruka) {
+        poruka = document.createElement('p');
+        poruka.className = 'podnozje-greska';
+        poruka.setAttribute('role', 'status');
+        podnozje.insertBefore(poruka, podnozje.firstChild);
+    }
+    poruka.textContent = porukaNedostaje(n);
+}
+
+(function() {
+    if (!forma) return;
+
+    function azuriraj() {
+        const poruka = forma.querySelector('.podnozje-greska');
+        if (!poruka) return;   /* pre prvog pokušaja slanja nema poruke */
+        const n = forma.querySelectorAll('.greska').length;
+        if (n === 0) poruka.remove();
+        else poruka.textContent = porukaNedostaje(n);
+    }
+
+    forma.addEventListener('change', azuriraj);
+    forma.addEventListener('input', azuriraj);
+    /* Potpis ne emituje change — kao i kod trake napretka */
+    document.addEventListener('pointerup', azuriraj);
+    document.addEventListener('touchend', azuriraj);
+})();
+
+/* ══════════════════════════════════════════
+   RADNA VERZIJA (autosave) + UPOZORENJE PRE IZLASKA
+   Odgovori se usput čuvaju u sessionStorage (po tabu —
+   novi tab na deljenom uređaju kreće od prazne forme) i
+   vraćaju posle slučajnog osvežavanja strane. Potpis se ne
+   čuva — crta se ponovo. Pre napuštanja strane sa unetim
+   odgovorima brauzer traži potvrdu; posle uspešnog slanja
+   snimak se briše i upozorenja nema.
+   ══════════════════════════════════════════ */
+let upitnikPoslat = false;
+
+const radnaVerzijaKljuc = (function() {
+    if (!forma) return null;
+    const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
+    return tip ? 'upitnik_radna_verzija_' + tip : null;
+})();
+
+function obrisiRadnuVerziju() {
+    if (!radnaVerzijaKljuc) return;
+    try { sessionStorage.removeItem(radnaVerzijaKljuc); } catch (e) { /* privatni režim */ }
+}
+
+(function() {
+    if (!radnaVerzijaKljuc) return;
+
+    function snimi() {
+        const podaci = {};
+        forma.querySelectorAll('input[name]').forEach(function(inp) {
+            /* hidden (nivo, tip, saglasnost-canvas) i honeypot se ne čuvaju */
+            if (inp.type === 'hidden' || inp.name === 'hp_polje') return;
+            if (inp.type === 'radio') {
+                if (inp.checked) podaci[inp.name] = inp.value;
+            } else if (inp.value.trim() !== '') {
+                podaci[inp.name] = inp.value;
+            }
+        });
+        try {
+            if (Object.keys(podaci).length) sessionStorage.setItem(radnaVerzijaKljuc, JSON.stringify(podaci));
+            else sessionStorage.removeItem(radnaVerzijaKljuc);
+        } catch (e) { /* privatni režim — bez čuvanja */ }
+    }
+
+    function vrati() {
+        let snimak = null;
+        try { snimak = JSON.parse(sessionStorage.getItem(radnaVerzijaKljuc) || 'null'); } catch (e) {}
+        if (!snimak) return;
+
+        /* Rekreiraj „Dodaj još" setove (_2, _3…) pre upisa vrednosti —
+           postojeći handler sam generiše iste sufikse */
+        document.querySelectorAll('.dodaj-jos').forEach(function(dugme) {
+            const pitanje = dugme.closest('.pitanje');
+            const lista = pitanje && pitanje.querySelector('.prethodna-lista');
+            if (!lista) return;
+            const osnovna = [];
+            lista.querySelectorAll('.prethodna-stavka input[name]').forEach(function(inp) { osnovna.push(inp.name); });
+            let najveci = 1;
+            Object.keys(snimak).forEach(function(kljuc) {
+                const m = kljuc.match(/^(.+)_(\d+)$/);
+                if (m && osnovna.indexOf(m[1]) !== -1) najveci = Math.max(najveci, Number(m[2]));
+            });
+            for (let i = 2; i <= najveci; i++) dugme.click();
+        });
+
+        Object.keys(snimak).forEach(function(ime) {
+            const polja = forma.querySelectorAll('input[name="' + ime + '"]');
+            if (!polja.length) return;
+            let promenjen = null;
+            if (polja[0].type === 'radio') {
+                polja.forEach(function(r) {
+                    r.checked = (r.value === snimak[ime]);
+                    if (r.checked) promenjen = r;
+                });
+            } else {
+                polja[0].value = snimak[ime];
+                promenjen = polja[0];
+            }
+            /* change kroz postojeće listenere sređuje zasivljavanje
+               opcija, otkrivanje vođa-bloka i traku napretka */
+            if (promenjen) promenjen.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+
+    vrati();
+    forma.addEventListener('change', snimi);
+    forma.addEventListener('input', snimi);
+    /* „Ukloni" dugme ne emituje change — uhvati i klikove */
+    document.addEventListener('pointerup', snimi);
+
+    window.addEventListener('beforeunload', function(e) {
+        if (upitnikPoslat) return;
+        let ima = false;
+        try { ima = sessionStorage.getItem(radnaVerzijaKljuc) !== null; } catch (err) {}
+        /* Rezerva ako je sessionStorage nedostupan */
+        if (!ima) ima = !!forma.querySelector('input[type="radio"]:checked');
+        if (!ima) return;
+        e.preventDefault();
+        e.returnValue = '';
+    });
+})();

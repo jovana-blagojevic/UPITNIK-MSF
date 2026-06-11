@@ -245,6 +245,14 @@ body {
     font-weight: 400;
 }
 
+/* Naslov početne strane (jedini iza .header-logoi) je najduži —
+   manji maksimum da „Grupne aktivnosti i blagostanje:" stane u
+   jedan red. Ista specifičnost kao osnovno pravilo, pa mobilni
+   override niže u fajlu i dalje važi. */
+.header-logoi ~ h1 {
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+}
+
 .uputstvo {
     font-size: 0.82rem;
     color: oklch(0.82 0.02 70);
@@ -616,6 +624,18 @@ form {
     padding-top: 28px;
     border-top: 1px solid var(--ivica);
     margin-top: 8px;
+}
+
+/* Poruka o preostalim odgovorima — ubacuje je script.js posle
+   neuspelog slanja, levo od dugmeta „Pošalji" */
+.podnozje-greska {
+    flex: 1;
+    align-self: center;
+    margin: 0 16px 0 0;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--greska);
 }
 
 .dugme-submit {
@@ -1113,6 +1133,20 @@ form {
     font-weight: 400;
 }
 
+/* Link ka PDF-u informisanog pristanka unutar teksta saglasnosti */
+.saglasnost-tekst a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--ivica-jak);
+    transition: color 0.15s ease;
+}
+
+.saglasnost-tekst a:hover {
+    color: var(--plava);
+    text-decoration-color: currentColor;
+}
+
 /* ══════════════════════════════════════════
    CANVAS POTPIS
    ══════════════════════════════════════════ */
@@ -1227,6 +1261,28 @@ form {
     margin-top: 20px;
     text-align: center;
     font-weight: 500;
+}
+
+/* Linkovi ka dokumentima istraživanja (PDF) u uvodu — tiha
+   prateća linija, ne takmiči se sa pozivom na akciju */
+.uvod-dokumenti {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+    color: var(--tekst-slabi);
+}
+
+.uvod-dokumenti a {
+    color: var(--tekst-slab);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--ivica-jak);
+    transition: color 0.15s ease;
+}
+
+.uvod-dokumenti a:hover {
+    color: var(--plava);
+    text-decoration-color: currentColor;
 }
 
 /* Pomoćni razmak (zamena za inline margin-top) */
@@ -1629,7 +1685,12 @@ form {
     /* Submit — full width, easier thumb target */
     .podnozje-forme {
         justify-content: stretch;
+        flex-wrap: wrap;
         padding-top: 24px;
+    }
+    .podnozje-greska {
+        flex: 1 1 100%;
+        margin: 0 0 12px;
     }
     .dugme-submit {
         width: 100%;
@@ -1783,5 +1844,95 @@ form {
         margin-bottom: 12px;
     }
     .badge { margin-bottom: 12px; }
+}
+
+/* ══════════════════════════════════════════
+   TRAKA NAPRETKA
+   Fiksirana na vrhu ekrana; ubacuje je script.js samo na
+   stranama sa formom. Boje iz dizajn sistema, bez novih.
+   ══════════════════════════════════════════ */
+.napredak-traka {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: color-mix(in oklab, var(--tekst) 18%, transparent);
+    z-index: 100;
+}
+
+.napredak-puni {
+    height: 100%;
+    width: 0%;
+    background: var(--plava);
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ══════════════════════════════════════════
+   ANIMACIJA SEKCIJA
+   anim-sekcije dodaje script.js (samo uz IntersectionObserver
+   i bez prefers-reduced-motion) — bez JS-a sve je vidljivo.
+   Otkriveno stanje NEMA transform, da sticky likert
+   zaglavlje nastavi da radi.
+   ══════════════════════════════════════════ */
+body.anim-sekcije .sekcija,
+body.anim-sekcije .napomena,
+body.anim-sekcije .saglasnost-blok {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.anim-sekcije .sekcija-vidljiva {
+    opacity: 1;
+    transform: none;
+}
+
+/* ══════════════════════════════════════════
+   SHAKE NA GREŠKU
+   Okida se dodavanjem .greska pri validaciji (script.js
+   restartuje klasu da bi se ponovila i na sledeći submit).
+   ══════════════════════════════════════════ */
+@keyframes greska-trzaj {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-5px); }
+    40%      { transform: translateX(5px); }
+    60%      { transform: translateX(-3px); }
+    80%      { transform: translateX(3px); }
+}
+
+.pitanje.greska,
+.likert-red.greska {
+    animation: greska-trzaj 0.3s ease;
+}
+
+/* ══════════════════════════════════════════
+   SPINNER pri slanju (u .dugme-submit)
+   ══════════════════════════════════════════ */
+@keyframes spinner-okret {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid oklch(1 0 0 / 0.35);
+    border-top-color: white;
+    animation: spinner-okret 0.7s linear infinite;
+}
+
+.dugme-submit:disabled {
+    opacity: 0.85;
+    cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .napredak-puni { transition: none; }
+    .pitanje.greska,
+    .likert-red.greska { animation: none; }
+    .spinner { display: none; }
 }
 
