@@ -1263,15 +1263,9 @@ form {
     font-weight: 500;
 }
 
-/* Linkovi ka dokumentima istraživanja (PDF) u uvodu — tiha
-   prateća linija, ne takmiči se sa pozivom na akciju */
-.uvod-dokumenti {
-    font-family: var(--font-sans);
-    font-size: 0.78rem;
-    letter-spacing: 0.01em;
-    color: var(--tekst-slabi);
-}
-
+/* Red sa linkovima ka dokumentima istraživanja (PDF) u uvodu —
+   isti font, boja i veličina kao ostatak uvodnog teksta; samo
+   linkovi su vizuelno izdvojeni */
 .uvod-dokumenti a {
     color: var(--tekst-slab);
     text-decoration: underline;
