@@ -125,10 +125,7 @@ nalepi ga u Apps Script editor vezan za tabelu.
 
 ### Postavljanje (deploy)
 
-Korak po korak, sa svim mestima na kojima se najčešće greši:
-**[UPUTSTVO-GOOGLE-SHEETS.md](UPUTSTVO-GOOGLE-SHEETS.md)**.
-
-Ukratko: nalepi `server/apps-script.gs` kao `Code.gs` i
+Nalepi `server/apps-script.gs` kao `Code.gs` i
 `server/apps-script-setup.gs` kao drugi fajl u isti Apps Script projekat →
 **Deploy → New deployment → Web app** (*Execute as: Me*, *Who has access:
 Anyone*) → `/exec` URL u `assets/config.js`.

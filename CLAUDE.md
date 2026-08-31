@@ -44,7 +44,6 @@ server/                   — Google Apps Script (source of truth; NOT executed 
                             column), Pregled tab (counts), TEST tabs, and „Resetuj podatke". Reads TABOVI /
                             KOLONE / opsegZa() straight out of apps-script.gs — Apps Script shares one global
                             scope across files, so the header and the writer cannot drift apart.
-UPUTSTVO-GOOGLE-SHEETS.md — Step-by-step Sheets setup in Serbian (for the researcher, not for Claude)
 ```
 
 Paths are relative: pages in `strane/` reference assets as `../assets/…` and link back to the landing page as `../index.html`; `index.html` at the root uses `assets/…` and `strane/…`.
