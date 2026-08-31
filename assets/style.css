@@ -103,13 +103,13 @@
     --tekst-slabi: #908880;
 
     /* Akcent — duboka akademska tamno-plava */
-    --plava:       oklch(0.34 0.09 250);
-    --plava-sv:    oklch(0.96 0.015 250);
-    --plava-ivica: oklch(0.60 0.05 250);
+    --plava:       #073964;
+    --plava-sv:    #EBF3FC;
+    --plava-ivica: #6A839D;
 
     /* Greška */
-    --greska:      oklch(0.45 0.15 25);
-    --greska-sv:   oklch(0.96 0.03 25);
+    --greska:      #972527;
+    --greska-sv:   #FFEBE8;
 
     /* Tipografija */
     --font-sans:   'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -120,6 +120,23 @@
     --r-sredi: 5px;
     --senka:   0 1px 3px rgba(30,20,10,0.06), 0 4px 16px rgba(30,20,10,0.05);
 }
+
+/* ── Rezerva za starije brauzere ──────────────────────────────────────
+   Vrednosti iznad su sRGB heksovi da bi upitnik radio i na Safari < 15.4
+   (iPhone na iOS 15.0–15.3) i Chrome < 111, gde oklch() nije podržan.
+   Kod custom properties kaskada NE pada nazad sama (svaka sintaksno
+   ispravna vrednost se prihvata), pa se širi oklch gamut vraća ovde,
+   iza @supports provere. Brauzeri koji znaju oklch koriste ovaj blok. */
+@supports (color: oklch(0.5 0.1 250)) {
+    :root {
+        --plava:       oklch(0.34 0.09 250);
+        --plava-sv:    oklch(0.96 0.015 250);
+        --plava-ivica: oklch(0.60 0.05 250);
+        --greska:      oklch(0.45 0.15 25);
+        --greska-sv:   oklch(0.96 0.03 25);
+    }
+}
+
 
 /* ── Honeypot — vizuelno uklonjeno polje (zamka za botove) ── */
 .hp-polje {
@@ -165,7 +182,11 @@ body {
     border: none;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(30,20,10,0.12), 0 8px 32px rgba(30,20,10,0.10);
-    overflow: hidden;
+    /* `clip`, a NE `hidden`: overflow:hidden pravi od .upitnik najbliži
+       scroll-kontejner za position:sticky, pa se Likert zaglavlje sa legendom
+       („1 = Uopšte se ne slažem…") odskroluje umesto da ostane zakačeno.
+       `clip` odseca isto, ali ne pravi scroll-kontejner — sticky radi. */
+    overflow: clip;
 }
 
 /* ══════════════════════════════════════════
@@ -207,6 +228,7 @@ body {
 .header-logoi .logo-podela {
     width: 1px;
     height: 44px;
+    background: #675040;
     background: oklch(0.45 0.04 55);
 }
 
@@ -217,7 +239,9 @@ body {
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
+    color: #DBBEA8;
     color: oklch(0.82 0.045 60);
+    border: 1px solid #675040;
     border: 1px solid oklch(0.45 0.04 55);
     border-radius: var(--r-mali);
     padding: 4px 10px;
@@ -241,6 +265,7 @@ body {
 
 .upitnik-header h1 em {
     font-style: italic;
+    color: #CCB1A0;
     color: oklch(0.78 0.04 55);
     font-weight: 400;
 }
@@ -255,6 +280,7 @@ body {
 
 .uputstvo {
     font-size: 0.82rem;
+    color: #CDC2B7;
     color: oklch(0.82 0.02 70);
     line-height: 1.7;
     max-width: 580px;
@@ -454,6 +480,7 @@ form {
 }
 
 .pitanje.greska .opcija span::before {
+    border-color: #B46762;
     border-color: oklch(0.60 0.10 25);
 }
 
@@ -496,6 +523,7 @@ form {
 
 .unos-broj:focus {
     border-color: var(--plava);
+    box-shadow: 0 0 0 3px rgba(7, 57, 100, 0.12);
     box-shadow: 0 0 0 3px oklch(0.34 0.09 250 / 0.12);
 }
 
@@ -654,15 +682,19 @@ form {
     border-radius: var(--r-mali);
     cursor: pointer;
     transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 8px rgba(7, 57, 100, 0.2);
     box-shadow: 0 2px 8px oklch(0.34 0.09 250 / 0.2);
 }
 
 .dugme-submit:hover {
+    background: #002A4E;
     background: oklch(0.28 0.08 250);
+    box-shadow: 0 4px 16px rgba(7, 57, 100, 0.3);
     box-shadow: 0 4px 16px oklch(0.34 0.09 250 / 0.3);
 }
 
 .dugme-submit:active {
+    background: #00203F;
     background: oklch(0.24 0.07 250);
 }
 
@@ -691,6 +723,7 @@ form {
     font-size: 1.65rem;
     font-weight: 600;
     line-height: 1;
+    box-shadow: 0 6px 18px rgba(7, 57, 100, 0.28);
     box-shadow: 0 6px 18px oklch(0.34 0.09 250 / 0.28);
     animation: hvala-pecat 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
 }
@@ -720,6 +753,34 @@ form {
     animation-delay: 0.32s;
 }
 
+/* ── Izlaz sa ekrana blokade (deljeni uređaj) ──
+   Blokada „već ste popunili" živi u localStorage, dakle po UREĐAJU, a ne po
+   osobi. Na jednom tabletu koji kruži po probi hora ili po zbornici drugi
+   učesnik bi bez ovoga bio tiho odbijen. Namerno je diskretno i sitno — ne
+   poziva na ponovno popunjavanje, samo ostavlja izlaz onome kome treba. */
+.hvala-ponovo {
+    display: inline-block;
+    margin-top: 26px;
+    padding: 7px 12px;
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    color: var(--tekst-slabi);
+    background: none;
+    border: 1px solid var(--ivica);
+    border-radius: var(--r-mali);
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    animation: hvala-ulaz 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+.hvala-ponovo:hover,
+.hvala-ponovo:focus-visible {
+    color: var(--tekst-slab);
+    border-color: var(--ivica-jak);
+    background: var(--bg);
+}
+
 @keyframes hvala-pecat {
     from { opacity: 0; transform: scale(0.4); }
     to   { opacity: 1; transform: scale(1); }
@@ -732,7 +793,8 @@ form {
 
 @media (prefers-reduced-motion: reduce) {
     .hvala::before,
-    .hvala p { animation: none; }
+    .hvala p,
+    .hvala-ponovo { animation: none; }
 }
 
 /* ══════════════════════════════════════════
@@ -897,7 +959,9 @@ form {
     background: #4D4B47;
     gap: 12px;
     position: sticky;
-    top: 0;
+    /* 4px = visina .napredak-traka (fixed, z-index 100) — bez ovoga
+       traka preseca gornju ivicu zakačenog zaglavlja */
+    top: 4px;
     z-index: 5;
     border-radius: calc(var(--r-mali) - 1px) calc(var(--r-mali) - 1px) 0 0;
     box-shadow: 0 1px 0 rgba(30,20,10,0.08);
@@ -908,7 +972,8 @@ form {
 }
 
 .likert-pitanje {
-    font-size: 0.78rem;
+    font-size: 0.95rem;
+    color: #D3C9BD;
     color: oklch(0.84 0.02 70);
     font-weight: 400;
     font-style: italic;
@@ -927,6 +992,7 @@ form {
     text-align: center;
     font-size: 0.8rem;
     font-weight: 600;
+    color: #CDC2B7;
     color: oklch(0.82 0.02 70);
     letter-spacing: 0.04em;
     display: flex;
@@ -946,18 +1012,20 @@ form {
     width: 28px;
     height: 28px;
     border-radius: 50%;
+    background: #1E3A56;
     background: oklch(0.34 0.06 250);
 }
 
 .likert-brojevi span small {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     font-weight: 500;
+    color: #C6BCB0;
     color: oklch(0.80 0.02 70);
     line-height: 1.3;
     text-align: center;
     white-space: normal;
     word-break: keep-all;
-    max-width: 56px;
+    max-width: 62px;
     letter-spacing: 0.01em;
 }
 
@@ -1072,6 +1140,7 @@ form {
 }
 
 .likert-red.greska .likert-opcija span {
+    border-color: #B46762;
     border-color: oklch(0.60 0.10 25);
     background: var(--greska-sv);
 }
@@ -1094,8 +1163,8 @@ form {
 }
 
 .likert-7 .likert-brojevi span small {
-    max-width: 44px;
-    font-size: 0.66rem;
+    max-width: 50px;
+    font-size: 0.72rem;
 }
 
 .likert-7 .likert-brojevi { gap: 5px; }
@@ -1131,6 +1200,7 @@ form {
     line-height: 1.7;
     margin-bottom: 18px;
     font-weight: 400;
+    text-align: justify;
 }
 
 /* Link ka PDF-u informisanog pristanka unutar teksta saglasnosti */
@@ -1436,6 +1506,36 @@ form {
     transform: translateX(4px);
 }
 
+/* Napomena uz izbor nivoa — tiha fusnota ispod kartica. Oznaka
+   „Napomena" dolazi iz CSS-a (isti tipografski registar kao kod
+   .napomena u upitniku), pa markup nosi samo rečenicu. */
+.nivo-napomena {
+    margin: -6px 0 24px;
+    padding-top: 14px;
+    border-top: 1px solid var(--ivica);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--tekst-slab);
+}
+
+/* Osnovna težina je 300 — bez ovoga <strong> jedva da se razlikuje. */
+.nivo-napomena strong {
+    font-weight: 700;
+    color: var(--tekst);
+}
+
+.nivo-napomena::before {
+    content: "Napomena";
+    margin-right: 10px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--plava);
+}
+
 .nivo-nazad {
     display: inline-block;
     font-family: var(--font-sans);
@@ -1587,7 +1687,7 @@ form {
         gap: 10px;
     }
     .likert-pitanje {
-        font-size: 0.78rem;
+        font-size: 0.88rem;
         line-height: 1.45;
     }
     .likert-brojevi {
@@ -1608,7 +1708,7 @@ form {
         font-size: 0.85rem;
     }
     .likert-brojevi span small {
-        font-size: 0.64rem;
+        font-size: 0.70rem;
         line-height: 1.3;
         max-width: 100%;
         min-height: 1.5em; /* keep numbers vertically aligned across columns */
@@ -1644,7 +1744,10 @@ form {
     /* 7-step uses the same fluid grid */
     .likert-7 .likert-brojevi { gap: 4px; }
     .likert-7 .likert-brojevi span b { width: 22px; height: 22px; font-size: 0.78rem; }
-    .likert-7 .likert-brojevi span small { font-size: 0.58rem; }
+    /* 7 kolona na 375 px je već na granici — veći tekst ovde prelije
+       zaglavlje preko ivice bloka, pa ostaje na 0.58rem. Bez max-width
+       reseta desktop vrednost (50px) razvuče kolone preko širine bloka. */
+    .likert-7 .likert-brojevi span small { font-size: 0.58rem; max-width: 100%; }
     .likert-7 .likert-opcije { gap: 4px; }
     .likert-7 .likert-opcija span {
         width: 100%;
@@ -1657,7 +1760,12 @@ form {
         padding: 20px 18px;
         margin-bottom: 28px;
     }
-    .saglasnost-tekst { font-size: 0.83rem; }
+    /* Isti razlog kao kod .uvod-tekst.puno: obostrano poravnanje na uskom
+       ekranu pravi „reke" belina, pa je levo čitljivije od 640px naniže. */
+    .saglasnost-tekst {
+        font-size: 0.83rem;
+        text-align: left;
+    }
 
     .potpis-wrapper { max-width: 100%; }
     .potpis-canvas {
@@ -1702,6 +1810,12 @@ form {
         font-size: 0.86rem;
         line-height: 1.7;
         margin-bottom: 28px;
+    }
+    /* Obostrano poravnanje na uskom ekranu pravi „reke" belina —
+       srpski se ne preliva sa hyphens:auto pouzdano, pa je levo
+       poravnanje čitljivije od 640px naniže. */
+    .uvod-tekst.puno {
+        text-align: left;
     }
     .aktivnosti {
         grid-template-columns: 1fr;
@@ -1748,12 +1862,12 @@ form {
     .opcija span { font-size: 0.9rem; padding: 10px 10px; }
 
     .likert-zaglavlje { padding: 12px 10px 10px; }
-    .likert-pitanje { font-size: 0.74rem; }
+    .likert-pitanje { font-size: 0.82rem; }
     .likert-red { padding: 12px 10px 14px; }
     .likert-stavka { font-size: 0.86rem; }
     .likert-brojevi { gap: 4px; }
     .likert-brojevi span b { width: 22px; height: 22px; font-size: 0.78rem; }
-    .likert-brojevi span small { font-size: 0.6rem; }
+    .likert-brojevi span small { font-size: 0.66rem; }
     .likert-opcije { gap: 4px; }
     .likert-opcija span { height: 38px; font-size: 0.9rem; }
 
@@ -1769,6 +1883,7 @@ form {
     .dugme-nivo { padding: 15px 15px; gap: 12px; }
     .nivo-ime { font-size: 0.92rem; }
     .nivo-opis { font-size: 0.8rem; }
+    .nivo-napomena { font-size: 0.76rem; }
 }
 
 /* ══════════════════════════════════════════
@@ -1816,6 +1931,7 @@ form {
 
     .dugme-submit:hover {
         background: var(--plava);
+        box-shadow: 0 2px 8px rgba(7, 57, 100, 0.2);
         box-shadow: 0 2px 8px oklch(0.34 0.09 250 / 0.2);
     }
 
@@ -1851,6 +1967,7 @@ form {
     left: 0;
     right: 0;
     height: 4px;
+    background: rgba(30, 27, 22, 0.18);   /* rezerva za brauzere bez color-mix() */
     background: color-mix(in oklab, var(--tekst) 18%, transparent);
     z-index: 100;
 }
@@ -1913,6 +2030,7 @@ body.anim-sekcije .sekcija-vidljiva {
     width: 15px;
     height: 15px;
     border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
     border: 2px solid oklch(1 0 0 / 0.35);
     border-top-color: white;
     animation: spinner-okret 0.7s linear infinite;

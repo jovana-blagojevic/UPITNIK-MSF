@@ -11,7 +11,7 @@
 
 // 1) URL: zalepi „/exec" URL koji dobiješ posle Deploy → Web app.
 //    (Mora se završavati na /exec — NE /dev.)
-window.UPITNIK_URL   = 'https://script.google.com/macros/s/AKfycbzGs2P71QamzBlVsJF4I7bbq37QaXHM49wggD5xkSepVufcvhpcl0BEykGOaouAfEY/exec';
+window.UPITNIK_URL   = 'https://script.google.com/macros/s/AKfycbyzlXkH9lal09kr12O4inOmwvuVmTPQArgSsoWtXxcdz05X3PUjTcnwDm0va6bjx2Wt/exec';
 
 // 2) TOKEN: mora biti IDENTIČAN konstanti TOKEN u apps-script.gs.
 //    Ovaj je već generisan za tebe — samo isti string upiši i u apps-script.gs.

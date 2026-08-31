@@ -12,7 +12,9 @@ Always invoke the `frontend-design` skill when making any UI, layout, or styling
 
 The participant flow is three steps: `index.html` (pick group) → `nivo-{grupa}.html` (pick engagement level) → `index-{grupa}.html?nivo={nivo}` (the questionnaire, pre-filtered to that level). The chosen level arrives in the questionnaire via the `?nivo=` query param; opening a questionnaire without a valid `?nivo=` redirects back to `nivo-{grupa}.html`.
 
-On submit (after client-side validation), the form POSTs the collected answers as JSON to a Google Apps Script endpoint read from `assets/config.js` (`window.UPITNIK_URL` / `window.UPITNIK_TOKEN`). `assets/config.js` **is committed** — the site is deployed via GitHub Pages, which serves only files tracked in Git, and the token is not a real secret (it is visible client-side anyway). The real protection is server-side in `server/apps-script.gs` (token + honeypot + range validation + CSV/formula-injection sanitization). On success it sets a `localStorage` flag (`upitnik_popunjen_{tip}`) to block re-submission and swaps the card for a `.hvala` thank-you message; on network/error it shows an `alert()`.
+On submit (after client-side validation), the form POSTs the collected answers as JSON to a Google Apps Script endpoint read from `assets/config.js` (`window.UPITNIK_URL` / `window.UPITNIK_TOKEN`). `assets/config.js` **is committed** — the site is deployed via GitHub Pages, which serves only files tracked in Git, and the token is not a real secret (it is visible client-side anyway). The real protection is server-side in `server/apps-script.gs` (token + honeypot + range validation + CSV/formula-injection sanitization). Each submit attempt carries an `_id` the server remembers for 6 h, so a retry after a network timeout never produces a duplicate row. On success it sets a `localStorage` flag (`upitnik_popunjen` + `upitnik_popunjen_{tip}`) to block re-submission and swaps the card for a `.hvala` thank-you message; on network/error it shows an `alert()`.
+
+The block screen carries a discreet `.hvala-ponovo` button ("Nisam ja — upitnik popunjava drugi učesnik") that clears those keys and reloads. `localStorage` is per *device*, not per person; without the escape a single shared tablet at a rehearsal would silently turn away every participant after the first.
 
 No build step. No package manager. No test runner. Open any `.html` file directly in a browser to develop.
 
@@ -35,8 +37,14 @@ assets/                   — Static resources
   fonts/                  — Self-hosted Lora + Source Sans 3 (woff2, latin + latin-ext); @font-face at the top of style.css
   logos/                  — Institutional emblems shown in index.html header (white-treated on the dark header)
 server/                   — Google Apps Script (source of truth; NOT executed from Git — paste into the Apps Script editor)
-  apps-script.gs          — Receives POSTs, validates + sanitizes, writes to Google Sheets (tab per group)
-  apps-script-setup.gs    — One-time table preparation/styling
+  apps-script.gs          — Receives POSTs, validates + sanitizes, writes to Google Sheets (tab per group).
+                            Holds `KOLONE` — the canonical column order per group, taken from the DOM order
+                            of `<input name>` in `strane/index-*.html`. Editing questions means editing this.
+  apps-script-setup.gs    — Sheet menu „Upitnik": prepare/style tabs, Legenda tab (full question text per
+                            column), Pregled tab (counts), TEST tabs, and „Resetuj podatke". Reads TABOVI /
+                            KOLONE / opsegZa() straight out of apps-script.gs — Apps Script shares one global
+                            scope across files, so the header and the writer cannot drift apart.
+UPUTSTVO-GOOGLE-SHEETS.md — Step-by-step Sheets setup in Serbian (for the researcher, not for Claude)
 ```
 
 Paths are relative: pages in `strane/` reference assets as `../assets/…` and link back to the landing page as `../index.html`; `index.html` at the root uses `assets/…` and `strane/…`.
@@ -52,11 +60,11 @@ Each questionnaire is structured as:
 2. `<form id="forma">` — cream panel inside the dark card
    - `<input type="hidden" name="nivo">` — engagement level, filled from `?nivo=` (the level is chosen on `nivo-{grupa}.html`, not inside the form)
    - `<section class="sekcija" id="demografija">` — activity-specific demographic questions
-   - Five `<section class="sekcija">` blocks, one per scale — MHC-SF, SPS-10, WHO-5, SWLS, FAS (this is the **folklor** order; muzika/sport arrange the scales differently — see below)
+   - Five `<section class="sekcija">` blocks, one per scale — WHO-5, SWLS, MHC-SF, SPS-10, FAS — interleaved with the three level-dependent sections (see below)
    - `.saglasnost-blok` — canvas signature consent block
    - `.podnozje-forme` — submit button
 
-The demographic section differs between questionnaires. The five shared scales are identical across all three. **Muzika** and **sport** additionally have level-dependent sections (Fizička dobrobit, Odnos sa liderom, Negativni faktori) built as `.nivo-blok` elements with `data-nivo="amater|rekreativac|profesionalac"`; only the block matching the chosen `nivo` is shown. **Folklor** records `nivo` but has no level-dependent sections. Because of this, the section order differs per questionnaire: **folklor** is Demografija → MHC-SF → SPS-10 → WHO-5 → SWLS → FAS; **muzika/sport** are Demografija → WHO-5 → Fizička dobrobit → SWLS → MHC-SF → SPS-10 → Odnos sa liderom → FAS → Negativni faktori (the three level-dependent sections interleaved among the scales).
+The demographic section differs between questionnaires. The five shared scales are identical across all three. All three also have three level-dependent sections (Fizička dobrobit, Odnos sa liderom, Negativni faktori) built as `.nivo-blok` elements with `data-nivo="amater|rekreativac|profesionalac"`; only the block matching the chosen `nivo` is shown. The section order is therefore the same in all three: Demografija → WHO-5 → Fizička dobrobit → SWLS → MHC-SF → SPS-10 → Odnos sa liderom → FAS → Negativni faktori (the three level-dependent sections interleaved among the scales). The level-dependent sections carry the ids `#fizicka-dobrobit`, `#odnos-sa-liderom` and `#negativni-faktori`; their items are named `a_*` / `r_*` / `p_*` per level. For rekreativac, the leader questions sit behind a `.vodja-grananje` yes/no question (`r_ima_vodju`) with a `.vodja-blok`.
 
 ## Design system (style.css)
 
@@ -87,6 +95,11 @@ Both fonts are **self-hosted** (`@font-face` at the top of `style.css`, files in
 
 The `.upitnik` card uses a hard-coded `background: #4D4B47` (dark charcoal), not a token. The `.likert-zaglavlje` also uses this dark background.
 
+**Two constraints that look like stylistic choices but are not:**
+
+- `.upitnik` must use `overflow: clip`, **never `overflow: hidden`**. `hidden` makes `.upitnik` the nearest scroll container for `position: sticky`, and since it does not itself scroll, the sticky `.likert-zaglavlje` never pins — participants lose the "1 = Uopšte se ne slažem … 5 = …" legend a few items into a scale. `.likert-zaglavlje` sits at `top: 4px` to clear the fixed `.napredak-traka`.
+- Every `oklch()` value carries an sRGB fallback: a plain hex declaration on the line above for normal properties, and an `@supports (color: oklch(...))` block for the `:root` custom properties (custom properties accept any syntactically valid value, so the cascade does not fall back on its own). Without this, Safari < 15.4 and Chrome < 111 drop `--plava` and the `.likert-opcija input:checked + span` background, and **a selected answer becomes visually indistinguishable from an unselected one**.
+
 `index.html` opens with `.header-logoi` inside the dark `.upitnik-header`: the two institutional emblems (`assets/logos/`) rendered as white silhouettes via `filter: brightness(0) invert(1)`, separated by a thin `.logo-podela` hairline. The circular Pedagoški seal and the triangular Akademija mark are size-balanced per-logo (`.logo-pef` / `.logo-au`) because a triangle reads optically smaller than a circle.
 
 **Radio option variants:**
@@ -96,6 +109,7 @@ The `.upitnik` card uses a hard-coded `background: #4D4B47` (dark charcoal), not
 
 **Level-selection cards (`nivo-*.html`):**
 - `.nivo-izbor` / `.dugme-nivo` — clickable level cards (name + definition + arrow) that navigate to `index-{grupa}.html?nivo=…`
+- `.nivo-napomena` — footnote under the cards; the „Napomena" label comes from CSS (`::before`), so the markup carries only the sentence
 - The Amater/Rekreativac/Profesionalac choice lives on `nivo-*.html`; the questionnaire only records it in the hidden `name="nivo"` input (no in-form display)
 
 **Input variants:**
@@ -109,13 +123,15 @@ Independent features:
 
 0. **Nivo from URL** — on load, reads `?nivo=` (must be `amater`/`rekreativac`/`profesionalac`). If missing/invalid, redirects to `nivo-{tip_upitnika}.html`. Otherwise writes the value into the hidden `name="nivo"` input, then reveals the matching `.nivo-blok` (and resets/hides the others). For rekreativac, the `.vodja-blok` leader questions stay hidden until `r_ima_vodju="da"`.
 
-1. **"Drugo" activation** — when a radio with class `.opcija-drugo` is selected, its sibling `.unos-drugo` input becomes interactive. Deselecting it disables the input again.
+1. **"Drugo" activation** — a `.unos-drugo` input is `readOnly` + `tabindex="-1"` until its `.opcija-drugo` radio is selected. Picking a *different* option in the same `.opcije-red` re-locks it **and clears its value** — otherwise the sheet would receive both `vrsta_muzike=hor` and leftover `vrsta_muzike_drugo` text. `readOnly` rather than `disabled` on purpose: disabled inputs drop out of `FormData`, which would make the payload shape (and therefore the sheet header) vary.
 
 2. **Canvas signature** — `#saglasnost-canvas` captures a freehand signature. On first stroke, the hidden `#saglasnost` input is set to `'potpis'`; on `mouseup`/`touchend` it is updated to the full `canvas.toDataURL()`. `potpis_obrisi(canvasId)` clears the canvas and resets the hidden input.
 
-3. **Submit validation** — prevents submission if any radio group has no selection, any `type="number"` input is empty or out of range, or the canvas is unsigned. Errors are injected as `.greska-tekst` spans and the `.greska` class is added to the containing `.pitanje` or `.likert-red`. The page scrolls to the first error.
+3. **Submit validation** — prevents submission if any radio group has no selection, any `type="number"` input is empty / non-integer / out of range, `duzina > godine`, or the canvas is unsigned. Errors are injected as `.greska-tekst` spans and the `.greska` class is added to the containing `.pitanje` or `.likert-red`. The page scrolls to the first error.
 
-Note: the `vrsta_sporta` and `vrsta_folklora_drugo` text inputs are **not validated** on submit — they are intentionally optional (the sports name field) or only active when their radio is selected.
+The „dodatna aktivnost" question is a `.pitanje.opciono` pair: a free-text `dodatna_aktivnost` plus a `dodatna_aktivnost_nivo` radio row (amater / rekreativac / profesionalac), same shape as `prethodna_nivo`. The `.opciono` class is what keeps that radio group out of validation and out of the progress bar — drop it and the question silently becomes mandatory.
+
+Note: the `vrsta_sporta`, `dodatna_aktivnost` and `vrsta_folklora_drugo` text inputs are **not validated** on submit — they are intentionally optional, or only active when their radio is selected (`vrsta_folklora_drugo`).
 
 ## Content conventions
 

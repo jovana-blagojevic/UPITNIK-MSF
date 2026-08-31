@@ -54,11 +54,12 @@ Svaki upitnik sadrži:
 6. **FAS** — Fatigue Assessment Scale (10 stavki, skala 1–5)
 7. **Potvrda saglasnosti** — canvas potpis
 
-> **Redosled i dodatne sekcije:** gornji redosled prati **folklorni** upitnik. Upitnici za
-> **muziku** i **sport** raspoređuju skale drugačije i dodatno sadrže sekcije zavisne od nivoa
-> angažovanja — **Fizička dobrobit**, **Odnos sa liderom** i **Negativni faktori**. Njihov
-> redosled je: WHO-5 → Fizička dobrobit → SWLS → MHC-SF → SPS-10 → Odnos sa liderom → FAS →
-> Negativni faktori.
+> **Redosled sekcija je isti u sva tri upitnika:** Demografija → WHO-5 → **Fizička dobrobit**
+> → SWLS → MHC-SF → SPS-10 → **Odnos sa liderom** → FAS → **Negativni faktori** → saglasnost.
+> Podebljane sekcije zavise od nivoa angažovanja: prikazuje se samo blok izabranog nivoa
+> (`a_*` amater, `r_*` rekreativac, `p_*` profesionalac), ostali ostaju skriveni i resetovani
+> pa se njihovi odgovori nikad ne šalju. Kod rekreativaca su pitanja o vođi iza dodatnog
+> Da/Ne pitanja (`r_ima_vodju`).
 
 Obavezna su sva pitanja sa ponuđenim odgovorima (radio-dugmad), numerička polja i potpis
 saglasnosti. Slobodna tekstualna polja (naziv sporta, dodatna i prethodna aktivnost, opcija
@@ -124,37 +125,52 @@ nalepi ga u Apps Script editor vezan za tabelu.
 
 ### Postavljanje (deploy)
 
-1. Otvori Google tabelu → **Extensions → Apps Script**.
-2. Nalepi ceo `server/apps-script.gs`; postavi `TOKEN` na istu vrednost kao u `assets/config.js`.
-3. **Deploy → New deployment → Web app**, sa podešavanjima:
-   - **Execute as:** Me
-   - **Who has access:** Anyone — *bez ovoga* anonimni `fetch` dobija Google
-     login HTML umesto JSON-a i upis **ne uspeva** (najčešći uzrok grešaka).
-4. Kopiraj `/exec` URL u `assets/config.js` kao `window.UPITNIK_URL`.
-5. Posle svake izmene koda: **Manage deployments → uredi → New version** (URL ostaje isti).
+Korak po korak, sa svim mestima na kojima se najčešće greši:
+**[UPUTSTVO-GOOGLE-SHEETS.md](UPUTSTVO-GOOGLE-SHEETS.md)**.
 
-Odgovori se upisuju u tabove **Muzika / Sport / Folklor** (prave se automatski).
-Kolone se dodaju iz imena polja, pa nivo-zavisna pitanja (`a_*`/`r_*`/`p_*`) i
-„Dodaj još" polja (`_2`, `_3`…) sami zauzmu svoju kolonu — ništa se ne gubi.
+Ukratko: nalepi `server/apps-script.gs` kao `Code.gs` i
+`server/apps-script-setup.gs` kao drugi fajl u isti Apps Script projekat →
+**Deploy → New deployment → Web app** (*Execute as: Me*, *Who has access:
+Anyone*) → `/exec` URL u `assets/config.js`.
 
-### Priprema i izgled tabela (opciono)
+> ⚠️ Posle **svake** izmene `.gs` koda: **Manage deployments → uredi → New
+> version**. URL ostaje isti; bez toga i dalje radi stara verzija.
 
-Da tabovi budu spremni i lepi pre prvog učesnika, nalepi i **[`server/apps-script-setup.gs`](server/apps-script-setup.gs)**
-kao drugi `.gs` fajl u isti Apps Script projekat, pa osveži tabelu — pojavi se meni **Upitnik**:
+Odgovori se upisuju u tabove **Muzika / Sport / Folklor**. Zaglavlje se pri
+prvom odgovoru zaseje iz liste `KOLONE` u `apps-script.gs`, pa je redosled
+kolona isti kao redosled pitanja od prvog reda. Nepoznati ključevi (npr.
+„Dodaj još" setovi `_2`, `_3`…) dopisuju se na kraj — ništa se ne gubi.
+Likert i numerička polja se upisuju kao **brojevi**, pa `AVERAGE`/`STDEV` rade
+bez `VALUE()` omotača.
 
-- **1 · Pripremi tabele** — pravi tabove Muzika/Sport/Folklor sa svim kolonama (pravim
-  redom), zamrznutim i stilizovanim zaglavljem u bojama upitnika (ugljen + plavi akcenat,
-  krem trake), uz belešku-objašnjenje na svakom zaglavlju. Bezbedno: ako tab već ima
-  podatke, ne dira ih — samo osveži stil.
-- **2 · Napravi TEST tabele sa primerima** — „Muzika (TEST)", „Sport (TEST)",
-  „Folklor (TEST)" sa po nekoliko primera odgovora, da odmah vidiš izgled. Slobodno ih obriši.
-- **Obriši TEST tabele** — uklanja tri `(TEST)` taba.
+### Meni „Upitnik" u tabeli
 
-Setup fajl ne utiče na `doPost` (prijem odgovora) — služi samo za izgled tabele.
+Posle nalepljivanja `server/apps-script-setup.gs` i osvežavanja tabele:
 
-> Napomena: `localStorage` blokada ponovnog popunjavanja sprečava slučajno
-> dvostruko slanje, ali se trivijalno zaobilazi (incognito / brisanje podataka).
-> Za strože sprečavanje duplikata potrebna je serverska logika.
+- **1 · Pripremi tabele** — tabovi sa svim kolonama pravim redom, zamrznuto i
+  stilizovano zaglavlje (ugljen + plavi akcenat, krem trake) i beleška sa punim
+  tekstom pitanja na svakoj koloni. Ako tab već ima odgovore, sadržaj se ne dira.
+- **2 · Napravi legendu** — tab „Legenda": za svaku kolonu sekcija, pun tekst
+  pitanja i opseg vrednosti.
+- **3 · Osveži pregled** — tab „Pregled": broj odgovora po grupi i nivou, prvi i
+  poslednji odgovor.
+- **Napravi / Obriši TEST tabele** — `(TEST)` tabovi sa izmišljenim odgovorima,
+  da se vidi izgled pre puštanja linka.
+- **⚠️ Resetuj podatke** — briše sve odgovore, zadržava zaglavlje i stil. Traži
+  potvrdu i prvo prikaže koliko će redova obrisati. Pokreni posle probnog kruga.
+
+Setup fajl ne utiče na `doPost` (prijem odgovora) — služi samo za pripremu i
+održavanje tabele.
+
+### Duplikati i deljeni uređaji
+
+- Svaki pokušaj slanja nosi oznaku `_id`; server je pamti 6 sati, pa ponovni
+  klik posle mrežnog prekida **ne pravi drugi red**.
+- `localStorage` blokira ponovno popunjavanje po **uređaju**, ne po osobi. Zato
+  ekran „Već ste popunili upitnik" ima diskretno dugme *„Nisam ja — upitnik
+  popunjava drugi učesnik"*: bez njega bi jedan tablet koji kruži po probi tiho
+  odbijao sve učesnike posle prvog. Blokada se ionako trivijalno zaobilazi
+  (incognito / brisanje podataka) — ona sprečava slučajno, ne namerno dupliranje.
 
 ---
 

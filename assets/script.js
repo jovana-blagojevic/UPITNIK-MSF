@@ -26,6 +26,17 @@ function zabeleziPopunjen(tip) {
     } catch (e) { /* privatni režim — slanje je prošlo, samo blokada ne važi */ }
 }
 
+/* Blokada je po UREĐAJU, ne po osobi. Jedan tablet koji kruži po probi ili
+   po zbornici znači da bi drugi učesnik bio tiho odbijen — zato postoji izlaz. */
+function ponistiPopunjen() {
+    try {
+        localStorage.removeItem('upitnik_popunjen');
+        ['muzika', 'sport', 'folklor'].forEach(function(tip) {
+            localStorage.removeItem('upitnik_popunjen_' + tip);
+        });
+    } catch (e) { /* privatni režim — nema šta da se briše */ }
+}
+
 (function() {
     if (!upitnikPopunjen()) return;
     const kartica = document.querySelector('.upitnik');
@@ -35,31 +46,76 @@ function zabeleziPopunjen(tip) {
         '<p>Već ste popunili upitnik.</p>' +
         '<p>Vaši odgovori su zabeleženi. Hvala Vam na učešću!</p>' +
         '</div>';
+
+    /* Diskretan izlaz za deljeni uređaj — namerno sitan i bez poziva na
+       ponovno popunjavanje: služi sledećem učesniku, ne istom. */
+    const dugme = document.createElement('button');
+    dugme.type = 'button';
+    dugme.className = 'hvala-ponovo';
+    dugme.textContent = 'Nisam ja — upitnik popunjava drugi učesnik';
+    dugme.addEventListener('click', function() {
+        ponistiPopunjen();
+        location.reload();
+    });
+    kartica.querySelector('.hvala').appendChild(dugme);
 })();
 
 /* ══════════════════════════════════════════
    DRUGO — aktivacija tekst polja
-   ══════════════════════════════════════════ */
-document.querySelectorAll('.opcija-drugo input[type="radio"]').forEach(function(radio) {
-    radio.addEventListener('change', function(e) {
-        if (this.checked) {
-            var input = this.closest('.opcija-drugo').querySelector('.unos-drugo');
-            /* Fokus samo na pravi klik — programski change (vraćanje
-               radne verzije) ne sme da otme fokus i skroluje stranu */
-            if (input) { input.removeAttribute('tabindex'); if (e.isTrusted) input.focus(); }
-        }
-    });
-});
+   Polje uz „Drugo" je zaključano dok ta opcija nije izabrana, a kad se izbor
+   prebaci na drugu opciju u istoj grupi vrednost se BRIŠE. Bez brisanja bi u
+   tabelu otišlo i „hor" (izabrano) i zaostali tekst iz „Drugo" — dva odgovora
+   na jedno pitanje.
 
-document.querySelectorAll('.opcije-red').forEach(function(red) {
-    red.addEventListener('change', function(e) {
-        if (e.target.type === 'radio' && !e.target.closest('.opcija-drugo')) {
-            red.querySelectorAll('.unos-drugo').forEach(function(inp) {
-                inp.setAttribute('tabindex', '-1');
-            });
-        }
+   readOnly, a NE disabled: disabled polja ispadaju iz FormData, pa bi kolona
+   nestajala iz payload-a kad se ne koristi i zaglavlje tabele ne bi bilo
+   stabilno. tabindex=-1 uz to sklanja polje iz Tab redosleda.
+   ══════════════════════════════════════════ */
+(function() {
+    function zakljucaj(input) {
+        if (!input) return;
+        input.value = '';
+        input.readOnly = true;
+        input.setAttribute('tabindex', '-1');
+    }
+
+    function otkljucaj(input, fokus) {
+        if (!input) return;
+        input.readOnly = false;
+        input.removeAttribute('tabindex');
+        /* Fokus samo na pravi klik — programski change (vraćanje radne
+           verzije) ne sme da otme fokus i skroluje stranu */
+        if (fokus) input.focus();
+    }
+
+    /* Početno stanje: zaključaj sva polja čiji radio nije izabran.
+       Radi se iz JS-a, pa bez JS-a polje ostaje običan tekst unos. */
+    document.querySelectorAll('.opcija-drugo').forEach(function(opcija) {
+        const radio = opcija.querySelector('input[type="radio"]');
+        const input = opcija.querySelector('.unos-drugo');
+        if (!radio || !input || radio.checked) return;
+        input.readOnly = true;
+        input.setAttribute('tabindex', '-1');
     });
-});
+
+    document.querySelectorAll('.opcija-drugo input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function(e) {
+            if (!this.checked) return;
+            otkljucaj(this.closest('.opcija-drugo').querySelector('.unos-drugo'), e.isTrusted);
+        });
+    });
+
+    document.querySelectorAll('.opcije-red').forEach(function(red) {
+        red.addEventListener('change', function(e) {
+            if (e.target.type !== 'radio') return;
+            const svoja = e.target.closest('.opcija-drugo');
+            red.querySelectorAll('.opcija-drugo').forEach(function(opcija) {
+                if (opcija === svoja) return;
+                zakljucaj(opcija.querySelector('.unos-drugo'));
+            });
+        });
+    });
+})();
 
 /* ══════════════════════════════════════════
    PRISTUPAČNOST — semantičko grupisanje radio polja
@@ -202,7 +258,7 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
 
     poljeNivo.value = nivo;
 
-    /* ── Nivo-zavisni blokovi (muzika/sport; folklor ih nema) ── */
+    /* ── Nivo-zavisni blokovi (sve tri grupe) ── */
     const blokovi = document.querySelectorAll('.nivo-blok');
     if (!blokovi.length) return;
 
@@ -212,6 +268,10 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
     function resetBlok(blok) {
         if (!blok) return;
         blok.querySelectorAll('input[type="radio"]').forEach(function(r) { r.checked = false; });
+        /* I tekstualna polja: skriveni blok koji zadrži vrednost šalje je
+           zajedno sa vidljivim odgovorom, a kad dele ime (vrsta_folklora)
+           pregazi ga, jer je u DOM-u kasnije. */
+        blok.querySelectorAll('input[type="text"], input[type="number"]').forEach(function(i) { i.value = ''; });
         blok.querySelectorAll('.ima-izbor').forEach(function(el) { el.classList.remove('ima-izbor'); });
         blok.querySelectorAll('.neizabrana').forEach(function(el) { el.classList.remove('neizabrana'); });
         blok.querySelectorAll('.greska').forEach(function(el) { el.classList.remove('greska'); });
@@ -231,10 +291,13 @@ document.querySelectorAll('.opcije-red').forEach(function(red) {
         });
     }
 
-    /* Prikaži blokove izabranog nivoa, sakrij ostale i prazne poruke */
+    /* Prikaži blokove izabranog nivoa, sakrij ostale i prazne poruke.
+       data-nivo prima i listu razdvojenu razmakom („amater profesionalac"),
+       da blok zajednički za više nivoa ne bi morao da se duplira u markupu. */
     document.querySelectorAll('.nivo-prazno').forEach(function(prazno) { prazno.classList.add('skriveno'); });
     blokovi.forEach(function(blok) {
-        if (blok.getAttribute('data-nivo') === nivo) blok.classList.remove('skriveno');
+        const zaNivoe = (blok.getAttribute('data-nivo') || '').split(/\s+/);
+        if (zaNivoe.indexOf(nivo) !== -1) blok.classList.remove('skriveno');
         else sakrij(blok);
     });
 
@@ -394,6 +457,19 @@ if (forma) forma.addEventListener('input', (e) => {
     if (pitanje) ukloniGresku(pitanje);
 });
 
+/* ══════════════════════════════════════════
+   OZNAKA POKUŠAJA SLANJA (zaštita od duplikata)
+   Ako mreža pukne posle 15 s timeout-a, a server je red već upisao,
+   učesnik će kliknuti „Pošalji" ponovo. Isti _id putuje sa oba zahteva,
+   pa server prepoznaje ponovljeni pokušaj i ne upisuje drugi red.
+   ══════════════════════════════════════════ */
+const idSlanja = (function() {
+    try {
+        if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+    } catch (e) { /* stariji brauzeri — rezerva ispod */ }
+    return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+})();
+
 if (forma) forma.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -433,8 +509,36 @@ if (forma) forma.addEventListener('submit', (e) => {
         const broj = Number(input.value);
         const min = input.min !== '' ? Number(input.min) : -Infinity;
         const max = input.max !== '' ? Number(input.max) :  Infinity;
-        if (prazno || Number.isNaN(broj) || broj < min || broj > max) {
-            prikaziGresku(pitanje, `Unesite broj između ${input.min} i ${input.max}.`);
+        /* step="1" znači cele godine — bez ove provere prolaze „28,5" i „1e3",
+           jer type=number prihvata i decimale i eksponentni zapis. */
+        const celBroj = input.step !== '1' || Number.isInteger(broj);
+        if (prazno || Number.isNaN(broj) || !celBroj || broj < min || broj > max) {
+            prikaziGresku(pitanje, `Unesite ceo broj između ${input.min} i ${input.max}.`);
+            brojGresaka += 1;
+        }
+    });
+
+    /* ── Unakrsna provera: učešće ne može da traje duže od života ──
+       Bez ovoga prolazi „22 godine starosti, 40 godina u grupi" — greška u
+       kucanju koju ni jedno pojedinačno polje ne može da uhvati. */
+    const poljeGodine = forma.querySelector('input[name="godine"]');
+    const poljeDuzina = forma.querySelector('input[name="duzina"]');
+    if (poljeGodine && poljeDuzina && poljeGodine.value.trim() && poljeDuzina.value.trim()) {
+        if (Number(poljeDuzina.value) > Number(poljeGodine.value)) {
+            prikaziGresku(getPitanjeWrapper(poljeDuzina),
+                'Dužina učešća ne može biti veća od broja godina starosti.');
+            brojGresaka += 1;
+        }
+    }
+
+    /* ── Obavezna tekstualna polja ──
+       Većina .unos-linija polja je namerno opciona (vrsta_sporta,
+       dodatna_aktivnost…), pa se validira samo ono što nosi .obavezan. */
+    forma.querySelectorAll('.unos-linija.obavezan').forEach(input => {
+        const pitanje = getPitanjeWrapper(input);
+        if (!pitanje || pitanje.offsetParent === null) return;   /* skriveno */
+        if (!input.value.trim()) {
+            prikaziGresku(pitanje, 'Ovo polje je obavezno.');
             brojGresaka += 1;
         }
     });
@@ -462,9 +566,15 @@ if (forma) forma.addEventListener('submit', (e) => {
     const podaci = {};
     const fd = new FormData(forma);
     fd.forEach((vrednost, kljuc) => {
+        /* Isto ime može da nosi više polja iz različitih nivo-blokova
+           (vrsta_folklora: lista za amatere/profesionalce, slobodan unos za
+           rekreativce). Skriveni blok šalje prazan string, a bez ove provere
+           bi — pošto je u DOM-u kasnije — pregazio stvarni odgovor. */
+        if (vrednost === '' && podaci[kljuc]) return;
         podaci[kljuc] = kljuc === 'saglasnost' ? 'da' : vrednost;
     });
     podaci.token = window.UPITNIK_TOKEN;
+    podaci._id = idSlanja;
 
     const dugme = forma.querySelector('[type="submit"]');
 
@@ -555,6 +665,13 @@ if (forma) forma.addEventListener('submit', (e) => {
             if (input.value.trim() !== '') odgovoreno += 1;
         });
 
+        forma.querySelectorAll('.unos-linija.obavezan').forEach(function(input) {
+            const pitanje = getPitanjeWrapper(input);
+            if (pitanje && pitanje.offsetParent === null) return;
+            ukupno += 1;
+            if (input.value.trim() !== '') odgovoreno += 1;
+        });
+
         const potpis = forma.querySelector('#saglasnost');
         if (potpis) {
             ukupno += 1;
@@ -568,8 +685,12 @@ if (forma) forma.addEventListener('submit', (e) => {
 
     forma.addEventListener('change', izracunaj);
     forma.addEventListener('input', izracunaj);
-    /* Potpis i „Obriši" ne emituju change — preračunaj po otpuštanju prsta/miša */
+    /* Potpis i „Obriši" ne emituju change — preračunaj po otpuštanju prsta/miša.
+       Slušamo i pointerup i mouseup: pointer događaji pokrivaju sve savremene
+       brauzere, ali mouseup je jeftina rezerva za okruženja koja emituju samo
+       klasične mouse događaje (inače traka ostane na staroj vrednosti). */
     document.addEventListener('pointerup', izracunaj);
+    document.addEventListener('mouseup', izracunaj);
     document.addEventListener('touchend', izracunaj);
     izracunaj();
 })();
@@ -645,6 +766,7 @@ function prikaziBrojacGresaka(n) {
     forma.addEventListener('input', azuriraj);
     /* Potpis ne emituje change — kao i kod trake napretka */
     document.addEventListener('pointerup', azuriraj);
+    document.addEventListener('mouseup', azuriraj);
     document.addEventListener('touchend', azuriraj);
 })();
 
@@ -659,10 +781,16 @@ function prikaziBrojacGresaka(n) {
    ══════════════════════════════════════════ */
 let upitnikPoslat = false;
 
+/* Ključ nosi i nivo: odgovori su nivo-zavisni, pa snimak sa jednog nivoa ne
+   sme da se prelije na drugi ako se učesnik vrati i izabere drugačije. Bez
+   toga rekreativac dobije šifru iz amaterske liste („udruzenje") upisanu u
+   svoje polje za slobodan unos. */
 const radnaVerzijaKljuc = (function() {
     if (!forma) return null;
     const tip = (forma.querySelector('input[name="tip_upitnika"]') || {}).value;
-    return tip ? 'upitnik_radna_verzija_' + tip : null;
+    if (!tip) return null;
+    const nivo = (forma.querySelector('input[name="nivo"]') || {}).value;
+    return 'upitnik_radna_verzija_' + tip + (nivo ? '_' + nivo : '');
 })();
 
 function obrisiRadnuVerziju() {
@@ -712,17 +840,33 @@ function obrisiRadnuVerziju() {
         });
 
         Object.keys(snimak).forEach(function(ime) {
-            const polja = forma.querySelectorAll('input[name="' + ime + '"]');
+            /* Polja iz nenamenjenog nivoa se preskaču — nivo je fiksiran pri
+               učitavanju i ne menja se, pa bi vraćena vrednost tamo samo
+               stajala skrivena i kvarila snimak i poslate podatke.
+               (.vodja-blok se namerno ne filtrira: on se otkriva tek kroz
+               change na r_ima_vodju, koji stiže ranije u ovoj petlji.) */
+            const polja = [...forma.querySelectorAll('input[name="' + ime + '"]')]
+                .filter(function(p) {
+                    const blok = p.closest('.nivo-blok');
+                    return !blok || !blok.classList.contains('skriveno');
+                });
             if (!polja.length) return;
             let promenjen = null;
-            if (polja[0].type === 'radio') {
-                polja.forEach(function(r) {
-                    r.checked = (r.value === snimak[ime]);
-                    if (r.checked) promenjen = r;
-                });
+            /* Polje se bira prema snimljenoj vrednosti, a ne prema tipu prvog
+               polja u DOM-u: vrsta_folklora nosi i radio listu i tekstualni
+               unos, pa bi „prvo polje je radio" progutalo slobodan unos
+               rekreativca i odgovor bi nestao posle osvežavanja strane. */
+            const radioPogodak = polja.find(function(p) {
+                return p.type === 'radio' && p.value === snimak[ime];
+            });
+            if (radioPogodak) {
+                polja.forEach(function(r) { if (r.type === 'radio') r.checked = (r === radioPogodak); });
+                promenjen = radioPogodak;
             } else {
-                polja[0].value = snimak[ime];
-                promenjen = polja[0];
+                const tekst = polja.find(function(p) { return p.type !== 'radio'; });
+                if (!tekst) return;
+                tekst.value = snimak[ime];
+                promenjen = tekst;
             }
             /* change kroz postojeće listenere sređuje zasivljavanje
                opcija, otkrivanje vođa-bloka i traku napretka */
@@ -735,6 +879,7 @@ function obrisiRadnuVerziju() {
     forma.addEventListener('input', snimi);
     /* „Ukloni" dugme ne emituje change — uhvati i klikove */
     document.addEventListener('pointerup', snimi);
+    document.addEventListener('mouseup', snimi);
 
     window.addEventListener('beforeunload', function(e) {
         if (upitnikPoslat) return;
