@@ -18,6 +18,8 @@ The block screen carries a discreet `.hvala-ponovo` button ("Nisam ja — upitni
 
 No build step. No package manager. No test runner. Open any `.html` file directly in a browser to develop.
 
+⚠️ **Bump the `?v=` on the asset links after every change to `style.css` or `script.js`.** All seven pages load them as `assets/style.css?v=…`. GitHub Pages serves assets with `Cache-Control: max-age=600` and browsers hold them far longer than that in practice, so without a new query string a participant who already opened the survey keeps the old CSS — a fixed layout bug appears unfixed to exactly the people already filling the form. One shared version token across `style.css`, `script.js` and `config.js` in `index.html`, the three `strane/nivo-*.html` and the three `strane/index-*.html` (the landing and level screens carry no `config.js`).
+
 ## File structure
 
 ```
